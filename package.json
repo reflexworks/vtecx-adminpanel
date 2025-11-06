@@ -1,0 +1,64 @@
+{
+  "name": "vtecxblank",
+  "version": "1.0.0",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "npm": "^11.6.1",
+    "react-enterprise-recaptcha": "^1.0.4"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.5.8",
+    "@vtecx/vtecxapi": "^2.2.6",
+    "@vtecx/vtecxauth": "^1.0.3",
+    "@vtecx/vtecxutil": "^1.2.14",
+    "css-loader": "^7.1.2",
+    "prettier": "^3.6.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=0.12.5"
+  },
+  "main": "",
+  "scripts": {
+    "clean": "rimraf dist",
+    "clean:server": "npx vtecxutil clean:server",
+    "login": "npx vtecxutil login",
+    "upload": "npx vtecxutil upload",
+    "upload:data": "npx vtecxutil upload:data",
+    "upload:template": "npx vtecxutil upload:template",
+    "upload:htmlfolders": "npx vtecxutil upload:htmlfolders",
+    "upload:folderacls": "npx vtecxutil upload:folderacls",
+    "upload:properties": "npx vtecxutil upload:properties",
+    "upload:bigquery.json": "npx vtecxutil upload:bigquery.json",
+    "upload:firebase.json": "npx vtecxutil upload:firebase.json",
+    "download": "npx vtecxutil download",
+    "download:data": "npx vtecxutil download:data",
+    "download:template": "npx vtecxutil download:template",
+    "download:typings": "npx vtecxutil download:typings",
+    "download:folderacls": "npx vtecxutil download:folderacls",
+    "download:properties": "npx vtecxutil download:properties",
+    "download:bigquery.json": "npx vtecxutil download:bigquery.json",
+    "download:firebase.json": "npx vtecxutil download:firebase.json",
+    "watch": "npx rspack --mode=production --watch",
+    "watch:server": "npx rspack --mode=production --watch",
+    "watch:index": "npx rspack --env entry=/components/index.tsx --mode=production --watch",
+    "deploy:index": "npx rspack --env entry=/components/index.tsx --mode=production",
+    "serve": "npx rspack serve --mode=development",
+    "serve:index": "npx rspack serve --mode=development --env entry=/components/index.tsx",
+    "serve:login": "npx rspack serve --mode=development --env entry=/components/login.tsx"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reflexworks/vtecxblank.git"
+  }
+}
