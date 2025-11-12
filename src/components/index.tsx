@@ -1,7 +1,8 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import Main from './main'
 
 function App() {
-  return <h1>Hello vte.cx!!</h1>
+  return <Main />
 }
 createRoot(document.getElementById('content')!).render(<App />)

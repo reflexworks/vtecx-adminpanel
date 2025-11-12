@@ -1,38 +1,38 @@
 import '../styles/index.css'
 import * as vtecxauth from '@vtecx/vtecxauth'
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-
+import { fetcher } from '../utils/fetcher'
+import Loader from './parts/loader'
+import Grid from '@mui/material/Grid2'
 import {
-  ReducerContext,
-  CommonProvider,
-  CommonGrid,
-  CommonStepper,
-  CommonStep,
-  CommonInputText,
-  CommonButton,
-  CommonText,
-  CommonForm,
-  CommonBox,
-  CommonLink
-} from './common-dom'
-import { commonFetch, commonValidation } from './common'
+  Box,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  FormControl,
+  TextField,
+  Link,
+  Button
+} from '@mui/material'
+import { red } from '@mui/material/colors'
+import validation from '../utils/validation'
 
 type AuthStatus = 'checking' | 'ok' | 'invalid'
 
 export const ChangePassword = (_props: any) => {
-  const { state, dispatch }: any = useContext(ReducerContext)
-  const states = { state, dispatch }
-
   const [authStatus, setAuthStatus] = useState<AuthStatus>('checking')
   const [passresetToken, setPassresetToken] = useState<string | undefined>(undefined)
+  const [password, setPassword] = React.useState('')
+  const [password_re, setPasswordRe] = React.useState('')
+
+  const [error, setError] = React.useState('')
 
   // パスワード変更ボタン判定
   const [is_regist_btn, setIsRegistBtn] = useState(true)
   const isRegistBtn = () => {
-    const password = state.data.password
-    const password_re = state.data.password_re
-    const is_password_error = password ? commonValidation('password', password).error : true
+    const is_password_error = password ? validation('password', password).error : true
     const is_password_re_error = password !== password_re
     setIsRegistBtn(!(!is_password_error && !is_password_re_error))
   }
@@ -45,20 +45,17 @@ export const ChangePassword = (_props: any) => {
     const req = [
       {
         contributor: [
-          { uri: 'urn:vte.cx:auth:' + ',' + vtecxauth.getHashpass(state.data.password) },
+          { uri: 'urn:vte.cx:auth:' + ',' + vtecxauth.getHashpass(password) },
           { uri: 'urn:vte.cx:passreset_token:' + passresetToken }
         ]
       }
     ]
     try {
-      await commonFetch(states, '/d/?_changephash', 'put', req)
+      await fetcher('/d/?_changephash', 'put', req)
       setIsCompleted(true)
       setActiveStep(3)
     } catch (_error) {
-      dispatch({
-        type: '_show_error',
-        message: 'パスワード変更に失敗しました。もう一度画面をリロードして実行してください。'
-      })
+      setError('パスワード変更に失敗しました。もう一度画面をリロードして実行してください。')
     }
   }
 
@@ -76,7 +73,7 @@ export const ChangePassword = (_props: any) => {
       return
     }
 
-    commonFetch(null, '/d/?_uid&_RXID=' + encodeURIComponent(rxid), 'get')
+    fetcher('/d/?_uid&_RXID=' + encodeURIComponent(rxid), 'get')
       .then(() => {
         setPassresetToken(token)
         setAuthStatus('ok')
@@ -97,116 +94,147 @@ export const ChangePassword = (_props: any) => {
       })
   }, [])
 
-  // --- 表示分岐 ---
-  if (authStatus === 'checking') {
-    return (
-      <CommonGrid>
-        <CommonText title>パスワード変更</CommonText>
-        <CommonText>リンクを検証しています…</CommonText>
-      </CommonGrid>
-    )
-  }
+  const [md] = React.useState(6)
 
-  if (authStatus === 'invalid') {
-    return (
-      <CommonGrid>
-        <CommonText title>パスワード変更</CommonText>
-        <CommonBox top={2} bottom={4}>
-          <CommonText color="red">このリンクは無効か、有効期限が切れています。</CommonText>
-          <CommonText>
-            お手数ですが、<CommonLink href="forgot_password.html">パスワード再発行</CommonLink>から
-            新しいメールを受け取ってください。
-          </CommonText>
-        </CommonBox>
-      </CommonGrid>
-    )
-  }
-
-  // authStatus === 'ok'
   return (
-    <CommonGrid>
-      <CommonText title>パスワード変更</CommonText>
-      <CommonStepper
-        activeStep={active_step}
-        steps={['本人確認用メール送信', 'メール送信完了', 'パスワード変更', 'パスワード変更完了']}
-      />
-      {!is_completed && (
-        <CommonForm>
-          <CommonStep number={1} title="新しいパスワードを入力してください。">
-            <CommonText>
-              ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
-              必要があります。
-            </CommonText>
-            <CommonInputText
-              type="password"
-              label="パスワード入力"
-              placeholder="パスワード"
-              name="password"
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              value=""
-              validation={(v: string) => commonValidation('password', v)}
-              onChange={() => {
-                state.data.password_re = ''
-                isRegistBtn()
-              }}
-              transparent
-            />
-            <CommonText>確認のためにもう一度入力してください。</CommonText>
-            <CommonInputText
-              type="password"
-              label="パスワード入力（確認用）"
-              placeholder="パスワード"
-              name="password_re"
-              transparent
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              value={state.data.password_re}
-              validation={(v: string) =>
-                state.data.password === v
-                  ? { error: false, message: '' }
-                  : { error: true, message: 'パスワードと一致させてください' }
-              }
-              onChange={() => isRegistBtn()}
-            />
-          </CommonStep>
-
-          <CommonGrid>
-            <CommonGrid item justify="center">
-              <CommonButton
-                color="primary"
-                size="large"
-                disabled={is_regist_btn}
-                onClick={handleSubmit}
-              >
-                パスワードを変更する
-              </CommonButton>
-            </CommonGrid>
-          </CommonGrid>
-        </CommonForm>
+    <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <div style={{ marginTop: 20, paddingTop: 20 }}>
+          <a href="my_page.html" style={{ color: '#000', textDecoration: 'none' }}>
+            <img src="../img/logo_vt.svg" />
+          </a>
+        </div>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <Box paddingTop={2}>
+          <Typography variant="h5">パスワード変更</Typography>
+        </Box>
+      </Grid>
+      {authStatus === 'checking' && (
+        <Grid size={{ xs: 12, md: md }}>
+          <Typography variant="body2" component={'div'} paddingTop={10}>
+            リンクを検証しています…
+          </Typography>
+        </Grid>
       )}
-
-      {is_completed && (
-        <CommonBox>
-          <CommonBox top={2} bottom={4} align="center">
-            <CommonText>新しいパスワードへの変更が完了しました。</CommonText>
-          </CommonBox>
-          <CommonBox bottom={4} align="center">
-            <CommonText>ログイン画面からログインしてください。</CommonText>
-          </CommonBox>
-          <CommonBox bottom={4} align="center">
-            <CommonLink href="login.html">ログイン画面へ戻る</CommonLink>
-          </CommonBox>
-        </CommonBox>
+      {authStatus === 'invalid' && (
+        <>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography variant="body2" color={red[900]} component={'div'} paddingTop={10}>
+              このリンクは無効か、有効期限が切れています。
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography variant="caption" component={'div'}>
+              このリンクは無効か、有効期限が切れています。
+            </Typography>
+            <Typography variant="caption">
+              お手数ですが、<Link href={'forgot_password.html'}>パスワード再発行</Link>から
+              新しいメールを受け取ってください。
+            </Typography>
+          </Grid>
+        </>
       )}
-    </CommonGrid>
+      {authStatus === 'ok' && (
+        <>
+          <Grid size={{ xs: 12, md: md }} textAlign={'left'} paddingTop={5}>
+            <Stepper
+              activeStep={active_step}
+              alternativeLabel
+              sx={{ width: '85%', mb: 4, mx: 'auto' }}
+            >
+              {[
+                '本人確認用メール送信',
+                'メール送信完了',
+                'パスワード変更',
+                'パスワード変更完了'
+              ].map((label: any) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Grid>
+          {!is_completed && (
+            <>
+              <Grid size={{ xs: 12, md: md }}>
+                <Typography variant="body2">新しいパスワードを入力してください。</Typography>
+              </Grid>
+              <Grid size={{ xs: 12, md: md }}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    type="password"
+                    label="パスワード"
+                    size="small"
+                    value={password}
+                    onChange={event => setPassword(event.target.value)}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true
+                      }
+                    }}
+                    onBlur={() => isRegistBtn()}
+                  />
+                </FormControl>
+                <Typography variant="caption">
+                  ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
+                  必要があります。
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 12, md: md }}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    type="password"
+                    label="確認のためもう一度パスワードを入力してください"
+                    size="small"
+                    value={password_re}
+                    onChange={event => setPasswordRe(event.target.value)}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true
+                      }
+                    }}
+                    onBlur={() => isRegistBtn()}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: md }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  disabled={is_regist_btn}
+                  onClick={handleSubmit}
+                >
+                  パスワードを変更する
+                </Button>
+                {error && (
+                  <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+                    {error}
+                  </Typography>
+                )}
+              </Grid>
+            </>
+          )}
+          {is_completed && (
+            <Grid size={{ xs: 12, md: md }}>
+              <Typography>新しいパスワードへの変更が完了しました。</Typography>
+            </Grid>
+          )}
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography variant="caption" component={'div'}>
+              <Link href={'login.html'}>ログインに戻る</Link>
+            </Typography>
+          </Grid>
+        </>
+      )}
+    </Grid>
   )
 }
 
 const App: React.FC = () => (
-  <CommonProvider>
+  <Loader>
     <ChangePassword />
-  </CommonProvider>
+  </Loader>
 )
 
 createRoot(document.getElementById('content')!).render(<App />)
