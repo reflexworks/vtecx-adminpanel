@@ -18,6 +18,7 @@ import {
 } from '@mui/material'
 import { red } from '@mui/material/colors'
 import validation from '../utils/validation'
+import Footer from './parts/footer'
 
 export const ForgotPassword = (_props: any) => {
   const [required_captcha, setRequiredCaptcha] = React.useState<boolean>(true)
@@ -74,8 +75,15 @@ export const ForgotPassword = (_props: any) => {
         </div>
       </Grid>
       <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
-        <Box paddingTop={2}>
-          <Typography variant="h5">パスワード変更</Typography>
+        <Box paddingTop={10} width={'100%'}>
+          <Grid container size={12} width={'100%'}>
+            <Grid size={6} textAlign={'left'}>
+              <Typography variant="h5">パスワード変更</Typography>
+            </Grid>
+            <Grid size={6} textAlign={'right'}>
+              <img src="../img/logo.svg" />
+            </Grid>
+          </Grid>
         </Box>
       </Grid>
       <Grid size={{ xs: 12, md: md }} textAlign={'left'} paddingTop={5}>
@@ -173,6 +181,7 @@ const App: React.FC = () => {
       <Loader>
         <ForgotPassword />
       </Loader>
+      <Footer />
     </ReCaptchaProvider>
   )
 }

@@ -3,6 +3,7 @@ import { Box, Typography, Stepper, Step, StepLabel, Link } from '@mui/material'
 import '../styles/index.css'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import Footer from './parts/footer'
 
 export const CompleteRegistration = (_props: any) => {
   return (
@@ -15,8 +16,15 @@ export const CompleteRegistration = (_props: any) => {
         </div>
       </Grid>
       <Grid size={{ xs: 12, md: 5 }} textAlign={'left'}>
-        <Box paddingTop={2}>
-          <Typography variant="h5">アカウント新規登録</Typography>
+        <Box paddingTop={10} width={'100%'}>
+          <Grid container size={12} width={'100%'}>
+            <Grid size={6} textAlign={'left'}>
+              <Typography variant="h5">アカウント新規登録</Typography>
+            </Grid>
+            <Grid size={6} textAlign={'right'}>
+              <img src="../img/logo.svg" />
+            </Grid>
+          </Grid>
         </Box>
       </Grid>
       <Grid size={{ xs: 12, md: 5 }} textAlign={'left'} paddingTop={5}>
@@ -40,7 +48,12 @@ export const CompleteRegistration = (_props: any) => {
   )
 }
 const App: any = () => {
-  return <CompleteRegistration />
+  return (
+    <>
+      <CompleteRegistration />
+      <Footer />
+    </>
+  )
 }
 
 createRoot(document.getElementById('content')!).render(<App />)
