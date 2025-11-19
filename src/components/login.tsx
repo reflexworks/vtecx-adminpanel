@@ -12,8 +12,8 @@ import Grid from '@mui/material/Grid2'
 import { FormControl, TextField, Button, Link, Typography, Box } from '@mui/material'
 import { red } from '@mui/material/colors'
 import { fetcher } from '../utils/fetcher'
-import Loader from './parts/loader'
-import Footer from './parts/footer'
+import Loader from './parts/Loader'
+import Footer from './parts/Footer'
 
 // =====================
 // Login コンポーネント
@@ -60,11 +60,11 @@ export const Login = (_props: any) => {
         'X-WSSE': authToken
       })
       location.href = 'index.html'
-    } catch (_error: any) {
-      if (_error?.response) {
+    } catch (error) {
+      if (error?.response) {
         setError('ログインに失敗しました。メールアドレスまたはパスワードに誤りがあります。')
         // サーバーが「次回はCaptcha必須」と返した場合にフラグを立てる
-        if (_error.response.data?.feed?.title === 'Captcha required at next login.') {
+        if (error.response.data?.feed?.title === 'Captcha required at next login.') {
           setRequiredCaptcha(true)
         }
       }

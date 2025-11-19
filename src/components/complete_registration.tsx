@@ -3,7 +3,7 @@ import { Box, Typography, Stepper, Step, StepLabel, Link } from '@mui/material'
 import '../styles/index.css'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import Footer from './parts/footer'
+import Footer from './parts/Footer'
 
 export const CompleteRegistration = (_props: any) => {
   return (

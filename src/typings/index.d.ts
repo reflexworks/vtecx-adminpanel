@@ -7,6 +7,7 @@ declare namespace VtecxApp {
   }
   interface Feed {
     entry: Entry[]
+    title?: string
   }
   interface Entry {
     id?: string
@@ -17,6 +18,7 @@ declare namespace VtecxApp {
     content?: Content[]
     link?: Link[]
     contributor?: Contributor[]
+    published: string
   }
   interface Content {
     ______text: string

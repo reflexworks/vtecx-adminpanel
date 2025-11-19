@@ -21,9 +21,9 @@ import {
 } from '@mui/material'
 import { red } from '@mui/material/colors'
 import { fetcher } from '../utils/fetcher'
-import Loader from './parts/loader'
+import Loader from './parts/Loader'
 import validation from '../utils/validation'
-import Footer from './parts/footer'
+import Footer from './parts/Footer'
 
 export const Signup = (_props: any) => {
   const [required_captcha, setRequiredCaptcha] = React.useState<boolean>(true)
@@ -77,12 +77,12 @@ export const Signup = (_props: any) => {
       await fetcher('/d/?_adduser' + captchaOpt, 'post', req)
       setIsCompleted(true)
       setActiveStep(1)
-    } catch (_error: any) {
+    } catch (error) {
       setRequiredCaptcha(true)
-      if (_error?.response) {
-        if (_error.response.data.feed.title.indexOf('Duplicated key. account = ') !== -1) {
+      if (error?.response) {
+        if (error.response.data.feed.title.indexOf('Duplicated key. account = ') !== -1) {
           setError('そのアカウントは既に登録済みです。')
-        } else if (_error.response.data.feed.title.indexOf('Mail setting is required') !== -1) {
+        } else if (error.response.data.feed.title.indexOf('Mail setting is required') !== -1) {
           setError('アカウント登録を実行するには事前にメール設定をする必要があります。')
         } else {
           setError(

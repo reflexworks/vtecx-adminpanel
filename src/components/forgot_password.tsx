@@ -3,7 +3,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { ReCaptchaProvider, useReCaptcha } from 'react-enterprise-recaptcha'
 import { fetcher } from '../utils/fetcher'
-import Loader from './parts/loader'
+import Loader from './parts/Loader'
 import Grid from '@mui/material/Grid2'
 import {
   Box,
@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import { red } from '@mui/material/colors'
 import validation from '../utils/validation'
-import Footer from './parts/footer'
+import Footer from './parts/Footer'
 
 export const ForgotPassword = (_props: any) => {
   const [required_captcha, setRequiredCaptcha] = React.useState<boolean>(true)
@@ -57,7 +57,7 @@ export const ForgotPassword = (_props: any) => {
       await fetcher('/d/?_passreset' + captchaOpt, 'post', req)
       setIsCompleted(true)
       setActiveStep(1)
-    } catch (_error) {
+    } catch (error) {
       setRequiredCaptcha(true)
       setError('メールの送信に失敗しました。画面をリロードしてもう一度実行してください。')
     }

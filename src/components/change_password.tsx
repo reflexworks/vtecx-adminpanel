@@ -3,7 +3,7 @@ import * as vtecxauth from '@vtecx/vtecxauth'
 import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { fetcher } from '../utils/fetcher'
-import Loader from './parts/loader'
+import Loader from './parts/Loader'
 import Grid from '@mui/material/Grid2'
 import {
   Box,
@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import { red } from '@mui/material/colors'
 import validation from '../utils/validation'
-import Footer from './parts/footer'
+import Footer from './parts/Footer'
 
 type AuthStatus = 'checking' | 'ok' | 'invalid'
 
@@ -55,7 +55,7 @@ export const ChangePassword = (_props: any) => {
       await fetcher('/d/?_changephash', 'put', req)
       setIsCompleted(true)
       setActiveStep(3)
-    } catch (_error) {
+    } catch (error) {
       setError('パスワード変更に失敗しました。もう一度画面をリロードして実行してください。')
     }
   }

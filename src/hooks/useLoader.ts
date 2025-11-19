@@ -1,13 +1,13 @@
 import { atom, useAtom } from 'jotai'
 import React from 'react'
 
-export const loaderAtom = atom(false)
+export const loaderAtom = atom<boolean>(false)
 
-const useLoader = (_is_init_hidden?: boolean) => {
-  const [loader, setLoader]: any = useAtom(loaderAtom)
+const useLoader = (is_init_hidden?: boolean) => {
+  const [loader, setLoader] = useAtom<boolean>(loaderAtom)
 
   React.useEffect(() => {
-    if (_is_init_hidden === undefined || _is_init_hidden === true) {
+    if (is_init_hidden === undefined || is_init_hidden === true) {
       setLoader(false)
     }
   }, [])

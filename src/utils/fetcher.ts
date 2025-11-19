@@ -1,3 +1,27 @@
+export type AxiosLikeResponse<T = any> = {
+  data: T
+  status: number
+  headers: Record<string, string>
+  ok: boolean
+  url: string
+}
+
+interface HttpErrorResponse {
+  status: number
+  data: any
+}
+
+export class HttpError extends Error {
+  public response: HttpErrorResponse
+
+  constructor(message: string, response: HttpErrorResponse) {
+    super(message)
+    this.name = 'HttpError'
+    this.response = response
+    Object.setPrototypeOf(this, HttpError.prototype)
+  }
+}
+
 /**
  * 共通：通信処理
  */
@@ -8,14 +32,6 @@ export function fetcher(
   _headers?: Record<string, string>,
   _is_file?: boolean
 ) {
-  type AxiosLikeResponse<T = any> = {
-    data: T
-    status: number
-    headers: Record<string, string>
-    ok: boolean
-    url: string
-  }
-
   return new Promise<AxiosLikeResponse>((resolve, reject) => {
     // --- headers組み立て（X-Requested-Withは必ず付与）
     const headers = new Headers(_headers || {})
@@ -102,8 +118,10 @@ export function fetcher(
 
       if (!res.ok) {
         // axios風のエラーオブジェクトを投げる
-        const err: any = new Error(`HTTP ${res.status}`)
-        err.response = { status: axRes.status, data: axRes.data }
+        const err: any = new HttpError(`HTTP ${res.status}`, {
+          status: axRes.status,
+          data: axRes.data
+        })
         throw err
       }
       return axRes
