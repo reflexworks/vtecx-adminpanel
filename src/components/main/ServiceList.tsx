@@ -270,7 +270,7 @@ const ServiceList = () => {
                           sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}
                         >
                           <Chip
-                            label={status}
+                            label={status === 'production' ? 'Pro' : 'Free'}
                             variant={status === 'production' ? undefined : 'outlined'}
                             color={status === 'production' ? 'success' : undefined}
                           />
