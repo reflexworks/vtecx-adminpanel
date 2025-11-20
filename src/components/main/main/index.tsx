@@ -19,10 +19,10 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { AccountCircle, MenuOutlined, FormatListNumbered, AttachMoney } from '@mui/icons-material'
-import Footer from '../parts/Footer'
+import Footer from '../../parts/Footer'
 import { matchPath, Outlet, useLocation } from 'react-router'
-import useAccount from '../../hooks/useAccount'
-import useGeneralError from '../../hooks/useGeneralError'
+import useAccount from '../../../hooks/useAccount'
+import useGeneralError from '../../../hooks/useGeneralError'
 
 const Main = () => {
   const { error: general_error } = useGeneralError()

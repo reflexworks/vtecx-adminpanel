@@ -1,13 +1,10 @@
 import React from 'react'
 import { Add, Refresh } from '@mui/icons-material'
 import {
-  Stack,
   Tooltip,
   IconButton,
   Button,
   Box,
-  Container,
-  styled,
   Typography,
   Paper,
   Table,
@@ -21,14 +18,15 @@ import {
   AlertTitle,
   TextField
 } from '@mui/material'
-import VtecxApp from '../../typings'
+import VtecxApp from '../../../typings'
 import dayjs from 'dayjs'
 import { Link } from 'react-router'
 import { grey, lightGreen } from '@mui/material/colors'
-import useService from '../../hooks/useService'
-import AlertDialog from '../parts/Dialog'
-import BasicModal from '../parts/Modal'
-import validation, { ValidationProps } from '../../utils/validation'
+import useService from '../../../hooks/useService'
+import AlertDialog from '../../parts/Dialog'
+import BasicModal from '../../parts/Modal'
+import validation, { ValidationProps } from '../../../utils/validation'
+import MainContainer from '../../parts/Container'
 
 const CreateServiceModal = ({
   open,
@@ -118,20 +116,6 @@ const ServiceList = () => {
 
   const [show_create_modal, setShowCreateModal] = React.useState<boolean>(false)
 
-  const PageContentHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: theme.spacing(2)
-  }))
-
-  const PageHeaderToolbar = styled('div')(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'row',
-    gap: theme.spacing(1),
-    marginLeft: 'auto'
-  }))
-
   const [entry, setEntry] = React.useState<VtecxApp.Entry[]>([])
 
   React.useEffect(() => {
@@ -186,161 +170,150 @@ const ServiceList = () => {
   }, [])
 
   return (
-    <Container sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column' }}>
-      <Stack sx={{ flex: 1, my: 2 }} spacing={2}>
-        <Stack>
-          <PageContentHeader>
-            <Typography variant="h5">サービス一覧</Typography>
-            <PageHeaderToolbar>
-              <Stack direction="row" alignItems="right" spacing={1}>
-                <Tooltip title="Reload data" placement="right" enterDelay={1000}>
-                  <div>
-                    <IconButton size="small" aria-label="refresh" onClick={getService}>
-                      <Refresh />
-                    </IconButton>
-                  </div>
-                </Tooltip>
-                <Button variant="contained" onClick={handleCreateClick} startIcon={<Add />}>
-                  新規作成
-                </Button>
-                <CreateServiceModal
-                  open={show_create_modal}
-                  handleClose={() => {
-                    setShowCreateModal(false)
-                  }}
-                  createService={createService}
-                  afterCreateService={afterCreateService}
-                />
-              </Stack>
-            </PageHeaderToolbar>
-          </PageContentHeader>
-        </Stack>
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
-            <Alert severity={messeage?.type}>{messeage?.value}</Alert>
-          </Box>
-          <Alert severity="info" sx={{ display: entry.length === 0 ? 'block' : 'none' }}>
-            <AlertTitle>サービスを作成してください。</AlertTitle>
-            「新規作成」ボタンからサービスを作成して開始してください。
-          </Alert>
-          <TableContainer component={Paper} hidden={entry.length === 0}>
-            <Table aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    align="center"
-                    sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}
-                  >
-                    ステータス
-                  </TableCell>
-                  <TableCell>サービス</TableCell>
-                  <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                    更新日時
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{ display: { xs: 'none', md: 'table-cell' } }}
-                  ></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {entry.map((entry: VtecxApp.Entry) => {
-                  const service_name = entry.id && entry.id.split(',')[0].replace('/_service/', '')
-                  const status = entry.subtitle
-                  const published = dayjs(entry.published).format('YYYY/MM/DD HH:mm:ss')
-                  const prop = status === 'production' ? 'https' : 'http'
-                  const link = `${prop}://${service_name}.vte.cx`
-                  return (
-                    status !== 'deleted' && (
-                      <TableRow
-                        key={entry.id}
-                        sx={{
-                          '&:last-child td, &:last-child th': { border: 0 },
-                          backgroundColor: status === 'production' ? lightGreen[50] : undefined, // 薄い青 (MUIのblue.50)
+    <MainContainer
+      title={'サービス一覧'}
+      action={
+        <>
+          <Tooltip title="Reload data" placement="right" enterDelay={1000}>
+            <div>
+              <IconButton size="small" aria-label="refresh" onClick={getService}>
+                <Refresh />
+              </IconButton>
+            </div>
+          </Tooltip>
+          <Button variant="contained" onClick={handleCreateClick} startIcon={<Add />}>
+            新規作成
+          </Button>
+          <CreateServiceModal
+            open={show_create_modal}
+            handleClose={() => {
+              setShowCreateModal(false)
+            }}
+            createService={createService}
+            afterCreateService={afterCreateService}
+          />
+        </>
+      }
+    >
+      <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
+        <Alert severity={messeage?.type}>{messeage?.value}</Alert>
+      </Box>
+      <Alert severity="info" sx={{ display: entry.length === 0 ? 'block' : 'none' }}>
+        <AlertTitle>サービスを作成してください。</AlertTitle>
+        「新規作成」ボタンからサービスを作成して開始してください。
+      </Alert>
+      <TableContainer component={Paper} hidden={entry.length === 0}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center" sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}>
+                ステータス
+              </TableCell>
+              <TableCell>サービス</TableCell>
+              <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                更新日時
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{ display: { xs: 'none', md: 'table-cell' } }}
+              ></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {entry.map((entry: VtecxApp.Entry) => {
+              const service_name = entry.id && entry.id.split(',')[0].replace('/_service/', '')
+              const status = entry.subtitle
+              const published = dayjs(entry.published).format('YYYY/MM/DD HH:mm:ss')
+              const link = `https://${service_name}.vte.cx`
+              return (
+                status !== 'deleted' && (
+                  <TableRow
+                    key={entry.id}
+                    sx={{
+                      '&:last-child td, &:last-child th': { border: 0 },
+                      backgroundColor: status === 'production' ? lightGreen[50] : undefined, // 薄い青 (MUIのblue.50)
 
-                          // hover時に適用されるスタイル
-                          '&:hover': {
-                            // ホバー時に少し濃い色にすることで、効果を強調
-                            backgroundColor: status === 'production' ? lightGreen[100] : grey[100] // 薄い青より少し濃い色 (MUIのblue.100)
+                      // hover時に適用されるスタイル
+                      '&:hover': {
+                        // ホバー時に少し濃い色にすることで、効果を強調
+                        backgroundColor: status === 'production' ? lightGreen[100] : grey[100] // 薄い青より少し濃い色 (MUIのblue.100)
+                      }
+                    }}
+                  >
+                    <TableCell
+                      align="center"
+                      sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}
+                    >
+                      <Chip
+                        label={status === 'production' ? 'Pro' : 'Free'}
+                        variant={status === 'production' ? undefined : 'outlined'}
+                        color={status === 'production' ? 'success' : undefined}
+                      />
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography
+                        variant="body2"
+                        component={'div'}
+                        sx={{
+                          overflowWrap: 'break-word',
+                          wordWrap: 'break-word',
+                          maxWidth: {
+                            xs: '300px',
+                            md: '500px'
                           }
                         }}
+                        gutterBottom
                       >
-                        <TableCell
-                          align="center"
-                          sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}
+                        {service_name}
+                      </Typography>
+                      <Link to={`${link}`} target="_blank">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            overflowWrap: 'break-word',
+                            wordWrap: 'break-word',
+                            maxWidth: {
+                              xs: '300px',
+                              md: '500px'
+                            }
+                          }}
+                          color={status === 'production' ? 'success' : grey[700]}
                         >
-                          <Chip
-                            label={status === 'production' ? 'Pro' : 'Free'}
-                            variant={status === 'production' ? undefined : 'outlined'}
-                            color={status === 'production' ? 'success' : undefined}
-                          />
-                        </TableCell>
-                        <TableCell component="th" scope="row">
-                          <Typography
-                            variant="body2"
-                            component={'div'}
-                            sx={{
-                              overflowWrap: 'break-word',
-                              wordWrap: 'break-word',
-                              maxWidth: {
-                                xs: '300px',
-                                md: '500px'
-                              }
-                            }}
-                            gutterBottom
-                          >
-                            {service_name}
-                          </Typography>
-                          <Link to={`${link}`} target="_blank">
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                overflowWrap: 'break-word',
-                                wordWrap: 'break-word',
-                                maxWidth: {
-                                  xs: '300px',
-                                  md: '500px'
-                                }
-                              }}
-                              color={status === 'production' ? 'success' : grey[700]}
-                            >
-                              {link}
-                            </Typography>
-                          </Link>
-                        </TableCell>
-                        <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          <Typography variant="body2" color={grey[700]}>
-                            {published}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          <Button
-                            onClick={() => {
-                              location.href = `/d/@/admin.html?_login=${service_name}`
-                            }}
-                          >
-                            管理画面
-                          </Button>
-                          <Button
-                            color="error"
-                            onClick={async () => {
-                              setMesseage(undefined)
-                              setDeleteServiceName(service_name)
-                              setDialog(true)
-                            }}
-                          >
-                            削除
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Stack>
+                          {link}
+                        </Typography>
+                      </Link>
+                    </TableCell>
+                    <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                      <Typography variant="body2" color={grey[700]}>
+                        {published}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                      <Button
+                        onClick={() => {
+                          location.href = `/d/@/admin.html?_login=${service_name}`
+                        }}
+                      >
+                        管理画面
+                      </Button>
+                      <Button
+                        color="error"
+                        onClick={async () => {
+                          setMesseage(undefined)
+                          setDeleteServiceName(service_name)
+                          setDialog(true)
+                        }}
+                      >
+                        削除
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <AlertDialog
         title={`${delete_service_name}を削除しますか？`}
         open={dialog}
@@ -351,7 +324,7 @@ const ServiceList = () => {
       >
         サービス削除後は復旧することはできません。
       </AlertDialog>
-    </Container>
+    </MainContainer>
   )
 }
 export default ServiceList

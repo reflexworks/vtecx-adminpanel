@@ -1,11 +1,11 @@
 import '../styles/main.css'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import Main from './main'
 import { createHashRouter, RouterProvider } from 'react-router'
-import ServiceList from './main/ServiceList'
-import Billing from './main/Billing'
 import Loader from './parts/Loader'
+import Main from './main/main'
+import ServiceList from './main/main/ServiceList'
+import Billing from './main/main/Billing'
 
 function App() {
   const router = createHashRouter([
