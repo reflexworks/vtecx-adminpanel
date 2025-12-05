@@ -141,6 +141,10 @@ export function fetcher(
             reject(error)
             return
           }
+          if (status > 499) {
+            reject(error)
+            return
+          }
 
           const title = error?.response?.data?.feed?.title
           if (title === 'Please make a pagination index in advance.') {
@@ -149,7 +153,8 @@ export function fetcher(
               setTimeout(() => get(), 1000)
               return
             } else {
-              alert(`一覧のindex作成に取得に失敗しました。\n\n${title}`)
+              reject(error)
+              return
             }
           }
           reject(error)
@@ -189,4 +194,7 @@ export const fileUpload = async (_name: string, _url: string) => {
       throw _e
     }
   }
+}
+export const checkGeneralError = (status?: number) => {
+  return status && (status === 401 || status === 403 || status > 499)
 }

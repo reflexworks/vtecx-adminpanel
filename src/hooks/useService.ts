@@ -1,11 +1,12 @@
 // useService.ts
 
 import React from 'react'
-import { fetcher, HttpError } from '../utils/fetcher'
+import { checkGeneralError, fetcher, HttpError } from '../utils/fetcher'
 import { atom, useAtom, useSetAtom } from 'jotai' // useSetAtomをインポート
 import useUid from './useUid'
 import VtecxApp from '../typings'
 import useLoader from './useLoader'
+import useGeneralError from './useGeneralError'
 
 export const serviceListAtom = atom<any[]>([])
 
@@ -66,6 +67,8 @@ const fetchListAtom = atom(null, async (get, set, uid: string) => {
 const useService = () => {
   const { uid } = useUid()
   const { setLoader } = useLoader()
+
+  const { setError: setGeneralError } = useGeneralError()
 
   const [list] = useAtom(serviceListAtom)
   const [error, setError] = useAtom(serviceErrorAtom)
@@ -134,6 +137,10 @@ const useService = () => {
       })
     }
   }, [uid, list.length, get])
+
+  React.useEffect(() => {
+    if (checkGeneralError(error?.response?.status)) setGeneralError(error)
+  }, [error])
 
   return {
     list,

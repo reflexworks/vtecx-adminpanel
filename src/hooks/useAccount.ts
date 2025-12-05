@@ -4,6 +4,7 @@ import { atom, useAtom, useSetAtom } from 'jotai'
 import VtecxApp from '../typings'
 import useUid from './useUid'
 import useGeneralError from './useGeneralError'
+import useLocation from './useLocation'
 
 export const accountAtom = atom<VtecxApp.Entry>()
 
@@ -52,10 +53,12 @@ const useAccount = () => {
   const [error, setError] = useAtom(errorAtom)
   const [account_email, setAccountEmail] = React.useState<string>()
 
+  const { moveLogin } = useLocation()
+
   const logout = React.useCallback(async () => {
     try {
       await fetcher('/d/?_logout', 'get')
-      location.href = 'login.html'
+      moveLogin()
     } catch (error) {
       setError(error)
     }

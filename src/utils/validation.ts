@@ -41,6 +41,27 @@ const validation = (type: string, value: string) => {
     }
   }
 
+  if (type === 'endpoint') {
+    if (value && value.match(/^[a-zA-Z0-9_]*$/)) {
+      if (value[0].match(/^[a-zA-Z]*$/)) {
+        res.error = false
+        res.message = ''
+      } else {
+        res.error = true
+        res.message = 'エンドポイント名は半角英字から開始してください。'
+      }
+    } else {
+      if (value) {
+        res.error = true
+        res.message =
+          'エンドポイント名に不正な文字が入力されています。半角英数とアンダーバー(_)が使用可能です。'
+      } else {
+        res.error = true
+        res.message = 'エンドポイント名を入力してください。'
+      }
+    }
+  }
+
   if (!value) return res
 
   if (type === 'email') {

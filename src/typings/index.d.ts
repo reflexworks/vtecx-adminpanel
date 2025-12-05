@@ -15,10 +15,11 @@ declare namespace VtecxApp {
     subtitle?: string
     rights?: string
     summary?: string
-    content?: Content[]
+    content?: Content
     link?: Link[]
     contributor?: Contributor[]
-    published: string
+    published?: string
+    updated?: string
   }
   interface Content {
     ______text: string

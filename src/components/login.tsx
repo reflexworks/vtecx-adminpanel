@@ -14,6 +14,7 @@ import { red } from '@mui/material/colors'
 import { fetcher } from '../utils/fetcher'
 import Loader from './parts/Loader'
 import Footer from './parts/Footer'
+import useLocation from '../hooks/useLocation'
 
 // =====================
 // Login コンポーネント
@@ -29,6 +30,8 @@ export const Login = (_props: any) => {
 
   // 送信時にトークンを取得
   const { executeRecaptcha } = useReCaptcha()
+
+  const { path } = useLocation()
 
   async function handleSubmit(_e: any) {
     _e.preventDefault()
@@ -59,7 +62,7 @@ export const Login = (_props: any) => {
       await fetcher('/d/?_login' + captchaOpt, 'get', null, {
         'X-WSSE': authToken
       })
-      location.href = 'index.html'
+      window.location.href = path[window.location.search.replace('?', '')] || 'index.html'
     } catch (error) {
       if (error?.response) {
         setError('ログインに失敗しました。メールアドレスまたはパスワードに誤りがあります。')

@@ -103,13 +103,7 @@ const CreateServiceModal = ({
 }
 
 const ServiceList = () => {
-  const {
-    list,
-    get: getService,
-    post: createService,
-    deleteService,
-    error: service_error
-  } = useService()
+  const { list, get: getService, post: createService, deleteService } = useService()
   const handleCreateClick = () => {
     setShowCreateModal(true)
   }
@@ -145,7 +139,6 @@ const ServiceList = () => {
   >()
 
   const afterCreateService = React.useCallback((success: boolean | undefined) => {
-    console.log(service_error)
     if (success) {
       setMesseage({ type: 'info', value: `サービス作成を作成しました。` })
       setTimeout(() => {
@@ -203,7 +196,7 @@ const ServiceList = () => {
         「新規作成」ボタンからサービスを作成して開始してください。
       </Alert>
       <TableContainer component={Paper} hidden={entry.length === 0}>
-        <Table aria-label="simple table">
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell align="center" sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}>
