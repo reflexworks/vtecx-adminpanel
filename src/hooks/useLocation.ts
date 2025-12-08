@@ -5,8 +5,7 @@ export const locationStorageAtom = atomWithStorage('location', '')
 
 const useLocation = () => {
   const path: { [key: string]: string } = {
-    //admin: '/d/@/admin.html'
-    admin: '/admin.html'
+    admin: '/d/@/admin.html'
   }
 
   const moveLogin = React.useCallback(() => {
