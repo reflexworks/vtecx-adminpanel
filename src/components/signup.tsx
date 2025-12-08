@@ -1,47 +1,51 @@
 // signup.tsx
 import '../styles/index.css'
 import * as vtecxauth from '@vtecx/vtecxauth'
-import React, { useEffect, useContext, useState } from 'react'
+import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { ReCaptchaProvider, useReCaptcha } from 'react-enterprise-recaptcha'
 
+import Grid from '@mui/material/Grid2'
 import {
-  ReducerContext,
-  CommonProvider,
-  CommonGrid,
-  CommonStepper,
-  CommonStep,
-  CommonInputText,
-  CommonButton,
-  CommonLink,
-  CommonText,
-  CommonCheckbox,
-  CommonForm,
-  CommonBox
-} from './common-dom'
-import { commonFetch, commonValidation } from './common'
+  Box,
+  Typography,
+  FormControl,
+  TextField,
+  Button,
+  Link,
+  Stepper,
+  Step,
+  StepLabel,
+  Checkbox,
+  FormControlLabel
+} from '@mui/material'
+import { red } from '@mui/material/colors'
+import { fetcher } from '../utils/fetcher'
+import Loader from './parts/Loader'
+import validation from '../utils/validation'
+import Footer from './parts/Footer'
 
 export const Signup = (_props: any) => {
-  const { state, dispatch }: any = useContext(ReducerContext)
-  const states = { state, dispatch }
-
-  const [required_captcha, setRequiredCaptcha] = useState<boolean>(true)
+  const [required_captcha, setRequiredCaptcha] = React.useState<boolean>(true)
   const { executeRecaptcha } = useReCaptcha()
 
-  const [is_regist_btn, setIsRegistBtn] = useState<boolean>(true)
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [password_re, setPasswordRe] = React.useState('')
+  const [terms1, setTerms1] = React.useState(false)
+
+  const [error, setError] = React.useState('')
+
+  const [is_regist_btn, setIsRegistBtn] = React.useState<boolean>(true)
   const isRegistBtn = () => {
-    const email = state.data.email
-    const password = state.data.password
-    const password_re = state.data.password_re
-    const terms1 = state.data.terms1
-    const is_email_error = email ? commonValidation('email', email).error : true
-    const is_password_error = password ? commonValidation('password', password).error : true
+    const is_email_error = email ? validation('email', email).error : true
+    const is_password_error = password ? validation('password', password).error : true
     const is_password_re_error = password !== password_re
     setIsRegistBtn(!(!is_email_error && !is_password_error && !is_password_re_error && terms1))
   }
 
-  const [is_completed, setIsCompleted] = useState<boolean>(false)
-  const [active_step, setActiveStep] = useState<number>(0)
+  const [is_completed, setIsCompleted] = React.useState<boolean>(false)
+  const [active_step, setActiveStep] = React.useState<number>(0)
 
   const handleSubmit = async (_e: any) => {
     _e.preventDefault()
@@ -50,11 +54,7 @@ export const Signup = (_props: any) => {
       {
         contributor: [
           {
-            uri:
-              'urn:vte.cx:auth:' +
-              state.data.email +
-              ',' +
-              vtecxauth.getHashpass(state.data.password)
+            uri: 'urn:vte.cx:auth:' + email + ',' + vtecxauth.getHashpass(password)
           }
         ]
       }
@@ -68,155 +68,185 @@ export const Signup = (_props: any) => {
         captchaOpt = '&g-recaptcha-token=' + encodeURIComponent(token)
       }
     } catch {
-      dispatch({
-        type: '_show_error',
-        message: 'Security check failed. Please try again.'
-      })
+      setError('セキュリティ確認に失敗しました。しばらくしてから再度お試しください。')
       return
     }
 
     setRequiredCaptcha(false)
     try {
-      await commonFetch(states, '/d/?_adduser' + captchaOpt, 'post', req)
+      await fetcher('/d/?_adduser' + captchaOpt, 'post', req)
       setIsCompleted(true)
       setActiveStep(1)
-    } catch (_error: any) {
+    } catch (error) {
       setRequiredCaptcha(true)
-      if (_error?.response) {
-        if (_error.response.data.feed.title.indexOf('Duplicated key. account = ') !== -1) {
-          dispatch({ type: '_show_error', message: 'そのアカウントは既に登録済みです。' })
-        } else if (_error.response.data.feed.title.indexOf('Mail setting is required') !== -1) {
-          dispatch({
-            type: '_show_error',
-            message: 'アカウント登録を実行するには事前にメール設定をする必要があります。'
-          })
+      if (error?.response) {
+        if (error.response.data.feed.title.indexOf('Duplicated key. account = ') !== -1) {
+          setError('そのアカウントは既に登録済みです。')
+        } else if (error.response.data.feed.title.indexOf('Mail setting is required') !== -1) {
+          setError('アカウント登録を実行するには事前にメール設定をする必要があります。')
         } else {
-          dispatch({
-            type: '_show_error',
-            message:
-              'アカウント登録に失敗しました。アカウントまたはパスワードが使用できない可能性があります。'
-          })
+          setError(
+            'アカウント登録に失敗しました。アカウントまたはパスワードが使用できない可能性があります。'
+          )
         }
       }
     }
   }
 
+  const [md] = React.useState(7)
+
   return (
-    <CommonGrid>
-      <CommonText title>アカウント登録</CommonText>
-      <CommonStepper activeStep={active_step} steps={['仮登録', '仮登録完了', '本登録完了']} />
+    <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <div style={{ marginTop: 20, paddingTop: 20 }}>
+          <a href="my_page.html" style={{ color: '#000', textDecoration: 'none' }}>
+            <img src="../img/logo_vt.svg" />
+          </a>
+        </div>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <Box paddingTop={10} width={'100%'}>
+          <Grid container size={12} width={'100%'}>
+            <Grid size={6} textAlign={'left'}>
+              <Typography variant="h5">アカウント新規登録(無料)</Typography>
+            </Grid>
+            <Grid size={6} textAlign={'right'}>
+              <img src="../img/logo.svg" />
+            </Grid>
+          </Grid>
+        </Box>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'} paddingTop={5}>
+        <Stepper activeStep={active_step} alternativeLabel sx={{ width: '85%', mb: 3, mx: 'auto' }}>
+          {['仮登録', '仮登録完了', '本登録完了'].map((label: any) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Grid>
       {!is_completed && (
-        <CommonForm>
-          <CommonText style={{ marginBottom: -30 }}>
-            まずは仮登録を行います。以下の入力フォームで必要な項目を入力してください。
-          </CommonText>
-
-          <CommonStep number={1} title="メールアドレスを入力してください。">
-            <CommonInputText
-              label="メールアドレス"
-              placeholder="メールアドレス"
-              type="email"
-              name="email"
-              autoComplete="email"
-              variant="outlined"
-              value=""
-              validation={(v: string) => commonValidation('email', v)}
-              onChange={() => isRegistBtn()}
-              transparent
-            />
-            <CommonText caption color="secondary">
-              ここで入力するメールアドレスは、ログインIDとして使用します。
-            </CommonText>
-          </CommonStep>
-
-          <CommonStep number={2} title="パスワードを入力してください。">
-            <CommonText>
+        <>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography variant="body2">
+              まずは仮登録を行います。以下の入力フォームで必要な項目を入力してください。
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <FormControl fullWidth variant="outlined">
+              <TextField
+                type="email"
+                label="メールアドレス"
+                size="small"
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true
+                  }
+                }}
+                onBlur={() => isRegistBtn()}
+              />
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <FormControl fullWidth variant="outlined">
+              <TextField
+                type="password"
+                label="パスワード"
+                size="small"
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true
+                  }
+                }}
+                onBlur={() => isRegistBtn()}
+              />
+            </FormControl>
+            <Typography variant="caption">
               ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
               必要があります。
-            </CommonText>
-            <CommonInputText
-              type="password"
-              label="パスワード入力"
-              placeholder="パスワード"
-              name="password"
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              value=""
-              validation={(v: string) => commonValidation('password', v)}
-              onChange={() => {
-                state.data.password_re = ''
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <FormControl fullWidth variant="outlined">
+              <TextField
+                type="password"
+                label="確認のためもう一度パスワードを入力してください"
+                size="small"
+                value={password_re}
+                onChange={event => setPasswordRe(event.target.value)}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true
+                  }
+                }}
+                onBlur={() => isRegistBtn()}
+              />
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography>利用規約に同意の上、仮登録ボタンを押下してください。</Typography>
+            <FormControlLabel
+              name="terms1"
+              onChange={(e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
+                console.log(e)
+                setTerms1(checked)
                 isRegistBtn()
               }}
-              transparent
-            />
-            <CommonText>確認のためにもう一度入力してください。</CommonText>
-            <CommonInputText
-              type="password"
-              label="パスワード入力（確認用）"
-              placeholder="パスワード"
-              name="password_re"
-              transparent
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              value={state.data.password_re}
-              validation={(v: string) =>
-                state.data.password === v
-                  ? { error: false, message: '' }
-                  : { error: true, message: 'パスワードと一致させてください' }
+              control={<Checkbox />}
+              label={
+                <Typography variant="caption">
+                  「<Link href={'user_terms.html'}>利用規約</Link>」に同意します。
+                </Typography>
               }
-              onChange={() => isRegistBtn()}
             />
-            <CommonText caption color="secondary">
-              ご入力頂いたパスワードは本登録後、当サービスをご利用いただくために必要になります。
-            </CommonText>
-            <CommonText caption>メモを取るなどし、忘れないようにご注意ください。</CommonText>
-          </CommonStep>
-
-          <CommonStep number={3} title="利用規約に同意の上、仮登録ボタンを押下してください。">
-            <CommonCheckbox name="terms1" onChange={() => isRegistBtn()}>
-              <CommonText>
-                「<CommonLink href="user_terms.html">利用規約</CommonLink>」に同意します。
-              </CommonText>
-            </CommonCheckbox>
-
-            <CommonText style={{ marginTop: 20 }}>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography variant="caption">
               上記メールアドレスに本登録用のメールを送信します。メールが届きましたら、
               <b>本文のリンクをクリックして本登録を完了</b>してください。
-            </CommonText>
-
-            <CommonButton
-              color="primary"
-              size="large"
-              style={{ width: '100%', height: '50px' }}
-              disabled={is_regist_btn}
-              onClick={(e: any) => handleSubmit(e)}
-            >
+            </Typography>
+            <Button variant="contained" fullWidth disabled={is_regist_btn} onClick={handleSubmit}>
               アカウントの仮登録をする
-            </CommonButton>
-          </CommonStep>
-        </CommonForm>
+            </Button>
+            {error && (
+              <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+                {error}
+              </Typography>
+            )}
+          </Grid>
+        </>
       )}
-
       {is_completed && (
-        <CommonBox>
-          <CommonBox top={2} bottom={4} align="center">
-            <CommonText>仮登録が完了しました。</CommonText>
-          </CommonBox>
-          <CommonBox bottom={4} align="center">
-            <CommonText>入力したメールアドレスに本登録用のメールを送信しました。</CommonText>
-          </CommonBox>
-          <CommonBox bottom={4} align="center">
-            <CommonText>メール本文のリンクをクリックし、本登録に移行してください。</CommonText>
-          </CommonBox>
-        </CommonBox>
+        <>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography>仮登録が完了しました。</Typography>
+          </Grid>
+          <Grid size={{ xs: 12, md: md }}>
+            <Typography component={'div'} variant="caption" paddingBottom={1}>
+              入力したメールアドレスに本登録用のメールを送信しました。
+            </Typography>
+            <Typography component={'div'} variant="caption" paddingBottom={1}>
+              メール本文のリンクをクリックし、本登録に移行してください。
+            </Typography>
+          </Grid>
+        </>
       )}
-    </CommonGrid>
+      <Grid size={{ xs: 12, md: md }}>
+        <Typography variant="caption" component={'div'}>
+          <Link href={'login.html'}>ログインに戻る</Link>
+        </Typography>
+      </Grid>
+    </Grid>
   )
 }
 
 const App: React.FC = () => {
-  const [siteKey, setSiteKey] = useState<string>()
-  useEffect(() => {
+  const [siteKey, setSiteKey] = React.useState<string>()
+  React.useEffect(() => {
     const key =
       typeof location !== 'undefined' && location.hostname.includes('localhost')
         ? '6LfCvngUAAAAAJssdYdZkL5_N8blyXKjjnhW4Dsn'
@@ -228,9 +258,10 @@ const App: React.FC = () => {
 
   return (
     <ReCaptchaProvider reCaptchaKey={siteKey} language="ja" defaultAction="adduser">
-      <CommonProvider>
+      <Loader>
         <Signup />
-      </CommonProvider>
+      </Loader>
+      <Footer />
     </ReCaptchaProvider>
   )
 }

@@ -1,41 +1,48 @@
 // login.tsx
 import '../styles/index.css'
 import * as vtecxauth from '@vtecx/vtecxauth'
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { ReCaptchaProvider, useReCaptcha } from 'react-enterprise-recaptcha'
 
-import {
-  CommonProvider,
-  CommonGrid,
-  CommonPaper,
-  CommonForm,
-  CommonInputText,
-  CommonButton,
-  CommonText,
-  ReducerContext,
-  CommonLink
-} from './common-dom'
-import { commonFetch, commonSessionStorage } from './common'
+import useLoader from '../hooks/useLoader'
+
+import Grid from '@mui/material/Grid2'
+import { FormControl, TextField, Button, Link, Typography, Box } from '@mui/material'
+import { red } from '@mui/material/colors'
+import { fetcher } from '../utils/fetcher'
+import Loader from './parts/Loader'
+import Footer from './parts/Footer'
+import useLocation from '../hooks/useLocation'
 
 // =====================
 // Login コンポーネント
 // =====================
 export const Login = (_props: any) => {
-  const { state, dispatch }: any = useContext(ReducerContext)
-  const states = { state, dispatch }
+  const { setLoader } = useLoader()
 
-  const [requiredCaptcha, setRequiredCaptcha]: any = useState(false)
-  const [isError, setIsError]: any = useState(false)
+  const [requiredCaptcha, setRequiredCaptcha]: any = React.useState(false)
+  const [error, setError]: any = React.useState('')
+
+  const [username, setUsername] = React.useState('')
+  const [pswrd, setPswrd] = React.useState('')
 
   // 送信時にトークンを取得
   const { executeRecaptcha } = useReCaptcha()
 
-  async function handleSubmit(_e: any, _data: any) {
+  const { path } = useLocation()
+
+  async function handleSubmit(_e: any) {
     _e.preventDefault()
 
-    const authToken = vtecxauth.getAuthToken(_data['user.email'], _data['user.password'])
+    setError('')
+
+    if (!username || !pswrd) return false
+
+    setLoader(true)
+
+    const authToken = vtecxauth.getAuthToken(username, pswrd)
 
     // requiredCaptcha が true のときだけトークンを付与
     let captchaOpt = ''
@@ -46,95 +53,110 @@ export const Login = (_props: any) => {
       }
     } catch (err) {
       // reCAPTCHA が取得できない場合はサーバーに行かずリトライさせる
-      dispatch({
-        type: '_show_error',
-        message: 'セキュリティ確認に失敗しました。しばらくしてから再度お試しください。'
-      })
+
+      setError('セキュリティ確認に失敗しました。しばらくしてから再度お試しください。')
       return
     }
 
     try {
-      await commonFetch(states, '/d/?_login' + captchaOpt, 'get', null, {
+      await fetcher('/d/?_login' + captchaOpt, 'get', null, {
         'X-WSSE': authToken
       })
-      const prev_location = commonSessionStorage.get('prev_location')
-      if (prev_location) {
-        location.href = prev_location.href
-      } else {
-        location.href = 'index.html'
-      }
-    } catch (_error: any) {
-      if (_error?.response) {
-        dispatch({
-          type: '_show_error',
-          message: 'ログインに失敗しました。メールアドレスまたはパスワードに誤りがあります。'
-        })
-        setIsError(true)
+      window.location.href = path[window.location.search.replace('?', '')] || 'index.html'
+    } catch (error) {
+      if (error?.response) {
+        setError('ログインに失敗しました。メールアドレスまたはパスワードに誤りがあります。')
         // サーバーが「次回はCaptcha必須」と返した場合にフラグを立てる
-        if (_error.response.data?.feed?.title === 'Captcha required at next login.') {
+        if (error.response.data?.feed?.title === 'Captcha required at next login.') {
           setRequiredCaptcha(true)
         }
       }
     }
+    setLoader(false)
   }
 
+  const [md] = React.useState(6)
+
   return (
-    <CommonGrid>
-      <CommonGrid item>
-        <CommonPaper title="ログイン" style={{ backgroundColor: '#F7F7F7' }}>
-          <CommonForm onSubmit={(_e: any, _data: any) => handleSubmit(_e, _data)}>
-            <CommonInputText
-              type="email"
-              label="メールアドレス"
-              placeholder="メールアドレス"
-              name="user.email"
-              icon="person"
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              error={isError}
-              transparent
-            />
-            <CommonInputText
-              type="password"
-              label="パスワード"
-              placeholder="パスワード"
-              name="user.password"
-              icon="vpn_key"
-              style={{ marginTop: 10 }}
-              variant="outlined"
-              transparent
-            />
-            <CommonText style={{ marginTop: 10, marginBottom: 20 }} align="right">
-              <CommonLink href="forgot_password.html">パスワードをお忘れですか？</CommonLink>
-            </CommonText>
-
-            <CommonButton type="submit" color="primary" size="large">
-              ログインする
-            </CommonButton>
-          </CommonForm>
-        </CommonPaper>
-      </CommonGrid>
-
-      <CommonGrid item>
-        <CommonGrid>
-          <CommonGrid item justify="center">
-            <CommonText style={{ marginTop: 10 }} align="center">
-              まだvte.cxのアカウントをお持ちでない方は
-              <br />
-              アカウント登録をお済ませください。
-            </CommonText>
-            <CommonButton
-              color="primary"
-              href="signup.html"
-              style={{ width: '90%', height: '50px', marginTop: 20 }}
-              disabled={false}
-            >
-              まずは会員登録をする
-            </CommonButton>
-          </CommonGrid>
-        </CommonGrid>
-      </CommonGrid>
-    </CommonGrid>
+    <Grid container direction="column" justifyContent="center" alignItems="center" spacing={4}>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <div style={{ marginTop: 20, paddingTop: 20 }}>
+          <a href="my_page.html" style={{ color: '#000', textDecoration: 'none' }}>
+            <img src="../img/logo_vt.svg" />
+          </a>
+        </div>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'left'}>
+        <Box paddingTop={10} width={'100%'}>
+          <Grid container size={12} width={'100%'}>
+            <Grid size={6} textAlign={'left'}>
+              <Typography variant="h5">ログイン</Typography>
+            </Grid>
+            <Grid size={6} textAlign={'right'}>
+              <img src="../img/logo.svg" />
+            </Grid>
+          </Grid>
+        </Box>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }}>
+        <FormControl fullWidth variant="outlined">
+          <TextField
+            type=""
+            label="アカウントID"
+            size="small"
+            value={username}
+            onChange={event => setUsername(event.target.value)}
+            slotProps={{
+              inputLabel: {
+                shrink: true
+              }
+            }}
+          />
+        </FormControl>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }}>
+        <FormControl fullWidth variant="outlined">
+          <TextField
+            type="password"
+            label="パスワード"
+            size="small"
+            value={pswrd}
+            onChange={event => setPswrd(event.target.value)}
+            slotProps={{
+              inputLabel: {
+                shrink: true
+              }
+            }}
+          />
+        </FormControl>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }}>
+        <FormControl fullWidth variant="outlined">
+          <Button variant="contained" size="small" onClick={handleSubmit}>
+            ログイン
+          </Button>
+        </FormControl>
+        {error && (
+          <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+            {error}
+          </Typography>
+        )}
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'center'}>
+        <Link href={'forgot_password.html'}>
+          <Typography variant="caption">パスワードをお忘れの方はこちら</Typography>
+        </Link>
+      </Grid>
+      <Grid size={{ xs: 12, md: md }} textAlign={'center'}>
+        <Typography variant="caption">
+          まだvte.cxのアカウントをお持ちでない方は
+          <Link href={'signup.html'}>
+            <Typography variant="caption">アカウント登録</Typography>
+          </Link>
+          をお済ませください。
+        </Typography>
+      </Grid>
+    </Grid>
   )
 }
 
@@ -159,9 +181,10 @@ const App: React.FC = () => {
     // Enterprise ライブラリの Provider
     //    defaultAction に「login」を設定（RECAPTCHA_ACTION 相当）
     <ReCaptchaProvider reCaptchaKey={siteKey} language="ja" defaultAction="login">
-      <CommonProvider>
+      <Loader>
         <Login />
-      </CommonProvider>
+      </Loader>
+      <Footer />
     </ReCaptchaProvider>
   )
 }

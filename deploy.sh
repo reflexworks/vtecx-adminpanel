@@ -8,3 +8,4 @@ npx rspack --env entry=/components/forgot_password.tsx --mode=production
 npx rspack --env entry=/components/login.tsx --mode=production
 npx rspack --env entry=/components/signup.tsx --mode=production
 npx rspack --env entry=/components/user_terms.tsx --mode=production
+npx rspack --env entry=/components/admin.tsx --mode=production
