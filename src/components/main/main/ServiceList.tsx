@@ -284,7 +284,7 @@ const ServiceList = () => {
                     <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                       <Button
                         onClick={() => {
-                          location.href = `/d/@/admin.html?_login=${service_name}`
+                          location.href = `redirect.html?service_name=${service_name}`
                         }}
                       >
                         管理画面

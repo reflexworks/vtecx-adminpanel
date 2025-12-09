@@ -9,3 +9,4 @@ npx rspack --env entry=/components/login.tsx --mode=production
 npx rspack --env entry=/components/signup.tsx --mode=production
 npx rspack --env entry=/components/user_terms.tsx --mode=production
 npx rspack --env entry=/components/admin.tsx --mode=production
+npx rspack --env entry=/components/redirect.tsx --mode=production
