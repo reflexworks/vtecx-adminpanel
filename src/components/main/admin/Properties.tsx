@@ -40,8 +40,8 @@ const Properties = () => {
             </Tooltip>
             <CopyCommandMenu
               menu={[
-                { label: 'download', value: 'npm run download:properties' },
-                { label: 'upload', value: 'npm run upload:properties' }
+                { label: 'download', value: 'npx vtecxutil download:properties' },
+                { label: 'upload', value: 'npx vtecxutil upload:properties' }
               ]}
             />
           </>
@@ -116,8 +116,8 @@ const Properties = () => {
             </Tooltip>
             <CopyCommandMenu
               menu={[
-                { label: 'download', value: 'npm run download:properties' },
-                { label: 'upload', value: 'npm run upload:properties' }
+                { label: 'download', value: 'npx vtecxutil download:properties' },
+                { label: 'upload', value: 'npx vtecxutil upload:properties' }
               ]}
             />
           </>
@@ -164,8 +164,8 @@ const Properties = () => {
             </Tooltip>
             <CopyCommandMenu
               menu={[
-                { label: 'download', value: 'npm run download:properties' },
-                { label: 'upload', value: 'npm run upload:properties' }
+                { label: 'download', value: 'npx vtecxutil download:properties' },
+                { label: 'upload', value: 'npx vtecxutil upload:properties' }
               ]}
             />
           </>

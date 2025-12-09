@@ -305,8 +305,8 @@ const Endpoint = () => {
           />
           <CopyCommandMenu
             menu={[
-              { label: 'download', value: 'npm run download:folderacls' },
-              { label: 'upload', value: 'npm run upload:folderacls' }
+              { label: 'download', value: 'npx vtecxutil download:folderacls' },
+              { label: 'upload', value: 'npx vtecxutil upload:folderacls' }
             ]}
           />
         </>

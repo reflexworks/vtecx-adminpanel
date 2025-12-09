@@ -37,9 +37,9 @@ const Schema = () => {
           </Tooltip>
           <CopyCommandMenu
             menu={[
-              { label: 'download', value: 'npm run download:template' },
-              { label: 'upload', value: 'npm run upload:template' },
-              { label: 'types', value: 'npm run download:typings' }
+              { label: 'download', value: 'npx vtecxutil download:template' },
+              { label: 'upload', value: 'npx vtecxutil upload:template' },
+              { label: 'types', value: 'npx vtecxutil download:typings' }
             ]}
           />
         </>
