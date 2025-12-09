@@ -8,19 +8,13 @@ import VtecxApp from '../typings'
 import useLoader from './useLoader'
 import useGeneralError from './useGeneralError'
 
-export const serviceListAtom = atom<any[]>([])
+export const serviceListAtom = atom<any[] | undefined>()
 
 const listLoadingPromiseAtom = atom<Promise<void> | null>(null)
 
 const serviceErrorAtom = atom<HttpError>()
 
 const fetchListAtom = atom(null, async (get, set, uid: string) => {
-  const currentList = get(serviceListAtom)
-
-  if (currentList.length > 0) {
-    return
-  }
-
   let currentPromise = get(listLoadingPromiseAtom)
   if (currentPromise) {
     return currentPromise
@@ -32,10 +26,10 @@ const fetchListAtom = atom(null, async (get, set, uid: string) => {
 
       const listRes = (await fetcher(`/d/_user/${uid}/service?f`, 'get')) || {}
 
-      if (listRes?.data?.feed?.entry && extensionRes?.data?.feed?.entry) {
-        listRes.data?.feed?.entry.forEach((listEntry: VtecxApp.Entry) => {
+      if (listRes?.data && extensionRes?.data) {
+        listRes.data?.forEach((listEntry: VtecxApp.Entry) => {
           // extensionResからentry.idが一致する要素を探す
-          const matchingExtensionEntry = extensionRes.data?.feed?.entry.find(
+          const matchingExtensionEntry = extensionRes.data.find(
             (extEntry: VtecxApp.Entry) => extEntry.id === listEntry.id
           )
 
@@ -47,7 +41,7 @@ const fetchListAtom = atom(null, async (get, set, uid: string) => {
         })
       }
 
-      set(serviceListAtom, listRes?.data?.feed?.entry || [])
+      set(serviceListAtom, listRes?.data || [])
       set(serviceErrorAtom, undefined)
     } catch (error) {
       console.error('Service list fetch failed:', error)
@@ -131,12 +125,12 @@ const useService = () => {
   )
 
   React.useEffect(() => {
-    if (uid && list.length === 0) {
+    if (uid && (!list || (list && list.length === 0))) {
       get().catch(err => {
         console.error('Initial list fetch failed via get():', err)
       })
     }
-  }, [uid, list.length, get])
+  }, [uid, list, get])
 
   React.useEffect(() => {
     if (checkGeneralError(error?.response?.status)) setGeneralError(error)
