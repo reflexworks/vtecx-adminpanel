@@ -204,6 +204,26 @@
             <uri>urn:vte.cx:acl:/_group/$admin,CRUD</uri>
         </contributor>
         <contributor>
+            <!-- admin.htmlを全ユーザに閲覧できるようにするACL設定(*)  -->
+            <uri>urn:vte.cx:acl:+,R.</uri>
+        </contributor>
+        <link rel="self" href="/_html/redirect.html" />
+    </entry>
+    <entry>
+        <contributor>
+            <uri>urn:vte.cx:acl:/_group/$admin,CRUD</uri>
+        </contributor>
+        <contributor>
+            <!-- admin.jsを全ユーザに閲覧できるようにするACL設定(*)  -->
+            <uri>urn:vte.cx:acl:+,R.</uri>
+        </contributor>
+        <link rel="self" href="/_html/components/redirect.js" />
+    </entry>
+    <entry>
+        <contributor>
+            <uri>urn:vte.cx:acl:/_group/$admin,CRUD</uri>
+        </contributor>
+        <contributor>
             <!-- /_settingsをログインユーザでサービスのみ（E)に閲覧できるようにするACL設定(+)  -->
             <uri>urn:vte.cx:acl:+,RE./</uri>
         </contributor>
