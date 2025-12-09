@@ -73,7 +73,7 @@ const Admin = () => {
     <div>
       <Toolbar>
         <Typography variant="body2" component="div" sx={{ flexGrow: 1 }}>
-          <img src="../img/logo.svg" width="80px" style={{ marginRight: '10px' }} />
+          <img src="/d/@/img/logo.svg" width="80px" style={{ marginRight: '10px' }} />
           管理画面
         </Typography>
       </Toolbar>
@@ -170,7 +170,7 @@ const Admin = () => {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'block', sm: 'none' } }}
           >
-            <img src="../img/logo.svg" width="80px" style={{ marginRight: '5px' }} />
+            <img src="/d/@/img/logo.svg" width="80px" style={{ marginRight: '5px' }} />
             管理画面
           </Typography>
           <Typography
@@ -208,7 +208,7 @@ const Admin = () => {
             onClose={handleClose}
           >
             <img
-              src="../img/logo_vt.svg"
+              src="/d/@/img/logo_vt.svg"
               width={'80%'}
               style={{ marginLeft: '15px', marginTop: '10px', marginBottom: '10px' }}
             />
