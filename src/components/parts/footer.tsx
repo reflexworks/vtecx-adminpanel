@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <Box width={'100%'} textAlign={'center'} marginTop={10}>
       <Typography variant="caption">
-        Copyrights©2018 Virtual Technology,Ltd. ALL Rights Reserved.
+        Copyrights©2025 Virtual Technology,Ltd. ALL Rights Reserved.
       </Typography>
     </Box>
   )
