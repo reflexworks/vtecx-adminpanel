@@ -13,6 +13,15 @@ import Schema from './main/admin/Schema'
 import Log from './main/admin/Log'
 
 function App() {
+  const rxid = window.location.search.replace('?_RXID=', '')
+
+  const [show_admin] = React.useState<boolean>(!Boolean(rxid))
+  React.useEffect(() => {
+    if (rxid) {
+      window.location.replace(window.location.pathname)
+    }
+  },[rxid])
+
   const router = createHashRouter([
     {
       Component: Admin,
@@ -52,10 +61,10 @@ function App() {
       ]
     }
   ])
-  return (
+  return show_admin ? (
     <Loader>
       <RouterProvider router={router} />
     </Loader>
-  )
+  ) : <></>
 }
 createRoot(document.getElementById('content')!).render(<App />)
