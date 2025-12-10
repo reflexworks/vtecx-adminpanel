@@ -28,8 +28,9 @@ export const ForgotPassword = (_props: any) => {
   const [error, setError] = React.useState('')
 
   const [is_regist_btn, setIsRegistBtn] = React.useState<boolean>(true)
-  const isRegistBtn = () => {
-    const is_email_error = email ? validation('email', email).error : true
+  const isRegistBtn = (value?: string) => {
+    const checkvalue = value || email
+    const is_email_error = checkvalue ? validation('email', checkvalue).error : true
     setIsRegistBtn(!!is_email_error)
   }
 
@@ -117,7 +118,10 @@ export const ForgotPassword = (_props: any) => {
                 label="メールアドレス"
                 size="small"
                 value={email}
-                onChange={event => setEmail(event.target.value)}
+                onChange={event => {
+                  setEmail(event.target.value)
+                  isRegistBtn(event.target.value)
+                }}
                 slotProps={{
                   inputLabel: {
                     shrink: true

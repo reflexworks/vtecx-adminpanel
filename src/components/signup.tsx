@@ -37,12 +37,44 @@ export const Signup = (_props: any) => {
   const [error, setError] = React.useState('')
 
   const [is_regist_btn, setIsRegistBtn] = React.useState<boolean>(true)
-  const isRegistBtn = () => {
-    const is_email_error = email ? validation('email', email).error : true
-    const is_password_error = password ? validation('password', password).error : true
-    const is_password_re_error = password !== password_re
-    setIsRegistBtn(!(!is_email_error && !is_password_error && !is_password_re_error && terms1))
-  }
+  const [check_email, setCheckEmail] = React.useState<boolean>(false)
+  const checkEmail = React.useCallback((value: string) => {
+    const checked = value ? validation('email', value).error : true
+    setCheckEmail(checked)
+    return checked
+  }, [])
+
+  const [check_password, setCheckPassword] = React.useState<boolean>(false)
+  const checkPassword = React.useCallback((value: string) => {
+    const checked = value ? validation('password', value).error : true
+    setCheckPassword(checked)
+    return checked
+  }, [])
+
+  const [check_password_re, setCheckPasswordRe] = React.useState<boolean>(false)
+  const checkRePassword = React.useCallback(
+    (value: string) => {
+      const checked = password !== value
+      setCheckPasswordRe(checked)
+      return checked
+    },
+    [password]
+  )
+
+  const isRegistBtn = React.useCallback(
+    (value?: string, type?: string) => {
+      const is_email_error = checkEmail(type === 'email' ? value || email : email)
+      const is_password_error = checkPassword(type === 'password' ? value || password : password)
+      const is_password_re_error = checkRePassword(
+        type === 'password_re' ? value || password_re : password_re
+      )
+      const terms1_value = type === 'terms1' ? Boolean(value) || terms1 : terms1
+      setIsRegistBtn(
+        !(!is_email_error && !is_password_error && !is_password_re_error && terms1_value)
+      )
+    },
+    [email, password, password_re, terms1]
+  )
 
   const [is_completed, setIsCompleted] = React.useState<boolean>(false)
   const [active_step, setActiveStep] = React.useState<number>(0)
@@ -139,7 +171,11 @@ export const Signup = (_props: any) => {
                 label="メールアドレス"
                 size="small"
                 value={email}
-                onChange={event => setEmail(event.target.value)}
+                onChange={event => {
+                  setEmail(event.target.value)
+                  isRegistBtn(event.target.value, 'email')
+                }}
+                error={check_email}
                 slotProps={{
                   inputLabel: {
                     shrink: true
@@ -156,7 +192,11 @@ export const Signup = (_props: any) => {
                 label="パスワード"
                 size="small"
                 value={password}
-                onChange={event => setPassword(event.target.value)}
+                onChange={event => {
+                  setPassword(event.target.value)
+                  isRegistBtn(event.target.value, 'password')
+                }}
+                error={check_password}
                 slotProps={{
                   inputLabel: {
                     shrink: true
@@ -165,7 +205,7 @@ export const Signup = (_props: any) => {
                 onBlur={() => isRegistBtn()}
               />
             </FormControl>
-            <Typography variant="caption">
+            <Typography variant="caption" color={check_password ? 'error' : undefined}>
               ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
               必要があります。
             </Typography>
@@ -177,7 +217,11 @@ export const Signup = (_props: any) => {
                 label="確認のためもう一度パスワードを入力してください"
                 size="small"
                 value={password_re}
-                onChange={event => setPasswordRe(event.target.value)}
+                onChange={event => {
+                  setPasswordRe(event.target.value)
+                  isRegistBtn(event.target.value, 'password_re')
+                }}
+                error={check_password_re}
                 slotProps={{
                   inputLabel: {
                     shrink: true
@@ -194,7 +238,7 @@ export const Signup = (_props: any) => {
               onChange={(e: React.SyntheticEvent<Element, Event>, checked: boolean) => {
                 console.log(e)
                 setTerms1(checked)
-                isRegistBtn()
+                isRegistBtn(String(checked), 'terms1')
               }}
               control={<Checkbox />}
               label={

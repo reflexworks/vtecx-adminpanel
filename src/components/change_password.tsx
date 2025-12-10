@@ -32,11 +32,34 @@ export const ChangePassword = (_props: any) => {
 
   // パスワード変更ボタン判定
   const [is_regist_btn, setIsRegistBtn] = useState(true)
-  const isRegistBtn = () => {
-    const is_password_error = password ? validation('password', password).error : true
-    const is_password_re_error = password !== password_re
-    setIsRegistBtn(!(!is_password_error && !is_password_re_error))
-  }
+
+  const [check_password, setCheckPassword] = React.useState<boolean>(false)
+  const checkPassword = React.useCallback((value: string) => {
+    const checked = value ? validation('password', value).error : true
+    setCheckPassword(checked)
+    return checked
+  }, [])
+
+  const [check_password_re, setCheckPasswordRe] = React.useState<boolean>(false)
+  const checkRePassword = React.useCallback(
+    (value: string) => {
+      const checked = password !== value
+      setCheckPasswordRe(checked)
+      return checked
+    },
+    [password]
+  )
+
+  const isRegistBtn = React.useCallback(
+    (value?: string, type?: string) => {
+      const is_password_error = checkPassword(type === 'password' ? value || password : password)
+      const is_password_re_error = checkRePassword(
+        type === 'password_re' ? value || password_re : password_re
+      )
+      setIsRegistBtn(!(!is_password_error && !is_password_re_error))
+    },
+    [password, password_re]
+  )
 
   // 送信
   const [is_completed, setIsCompleted] = useState(false)
@@ -175,16 +198,20 @@ export const ChangePassword = (_props: any) => {
                     label="パスワード"
                     size="small"
                     value={password}
-                    onChange={event => setPassword(event.target.value)}
+                    onChange={event => {
+                      setPassword(event.target.value)
+                      isRegistBtn(event.target.value, 'password')
+                    }}
                     slotProps={{
                       inputLabel: {
                         shrink: true
                       }
                     }}
+                    error={check_password}
                     onBlur={() => isRegistBtn()}
                   />
                 </FormControl>
-                <Typography variant="caption">
+                <Typography variant="caption" color={check_password ? 'error' : undefined}>
                   ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
                   必要があります。
                 </Typography>
@@ -196,12 +223,16 @@ export const ChangePassword = (_props: any) => {
                     label="確認のためもう一度パスワードを入力してください"
                     size="small"
                     value={password_re}
-                    onChange={event => setPasswordRe(event.target.value)}
+                    onChange={event => {
+                      setPasswordRe(event.target.value)
+                      isRegistBtn(event.target.value, 'password_re')
+                    }}
                     slotProps={{
                       inputLabel: {
                         shrink: true
                       }
                     }}
+                    error={check_password_re}
                     onBlur={() => isRegistBtn()}
                   />
                 </FormControl>
