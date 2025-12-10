@@ -5,9 +5,14 @@ declare namespace VtecxApp {
   interface Request {
     feed: Feed
   }
+  interface MessageResponse {
+    feed: Feed
+  }
   interface Feed {
-    entry: Entry[]
+    entry?: Entry[]
     title?: string
+    subtitle?: string
+    rights?: string
   }
   interface Entry {
     id?: string
@@ -25,8 +30,9 @@ declare namespace VtecxApp {
     ______text: string
   }
   interface Link {
-    ___href: string
-    ___rel: string
+    ___href?: string
+    ___rel?: string
+    ___title?: string
   }
   interface Contributor {
     uri?: string
