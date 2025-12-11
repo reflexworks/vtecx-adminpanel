@@ -88,7 +88,12 @@ const useService = () => {
         try {
           await fetcher(`/d/?_createservice`, 'post', [
             {
-              title: service_name.trim()
+              link: [
+                {
+                  ___href: '/@' + service_name.trim(),
+                  ___rel: 'self'
+                }
+              ]
             }
           ])
           setLoader(false)
