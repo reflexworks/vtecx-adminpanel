@@ -256,7 +256,10 @@ const Users = () => {
           </TableHead>
           <TableBody>
             {user_list.map((entry: VtecxApp.Entry) => {
-              const endPoint = entry.link ? entry.link[0].___href : ''
+              const endPoint: string =
+                entry && entry.link && entry.link[0] && entry.link[0].___href
+                  ? entry.link[0].___href
+                  : ''
               const uid = endPoint.replace('/_user/', '')
               const status = entry.summary
               let account = entry.title
