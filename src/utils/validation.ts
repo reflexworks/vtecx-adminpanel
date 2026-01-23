@@ -40,6 +40,24 @@ const validation = (type: string, value: string) => {
       }
     }
   }
+  if (type === 'schema_name') {
+    if (value && value.match(/^[a-z0-9_]*$/)) {
+      if (value[0].match(/^[a-z]*$/)) {
+        res.error = false
+      } else {
+        res.error = true
+        res.message = 'スキーマ名は半角英字から開始してください。'
+      }
+    } else {
+      res.error = true
+      if (value) {
+        res.message =
+          'スキーマ名に不正な文字が入力されています。小文字の半角英数とアンダーバー（_）が使用可能です。'
+      } else {
+        res.message = 'スキーマ名を入力してください。'
+      }
+    }
+  }
 
   if (type === 'endpoint') {
     if (value && value.match(/^[a-zA-Z0-9_]*$/)) {
