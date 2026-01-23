@@ -1,4 +1,4 @@
-export const getTypingsFromTemplate = (data: any) => {
+const getTypingsFromTemplate = (data: any) => {
   if (!data || !data.content) {
     return ''
   }
@@ -221,3 +221,5 @@ export const getTypingsFromTemplate = (data: any) => {
 
   return typeObj.join('\n')
 }
+
+export default getTypingsFromTemplate
