@@ -26,7 +26,7 @@ const fetchListAtom = atom(null, async (get, set) => {
   const newPromise = (async () => {
     try {
       const listRes = (await fetcher(`/d/_settings/template?e`, 'get')) || {}
-      const wameiListRes = (await fetcher(`/d/_settings/template_property?f`, 'get')) || []
+      const wameiListRes = (await fetcher(`/d/_settings/template_property?f&l=*`, 'get')) || []
       set(serviceListAtom, listRes?.data || {})
       set(serviceWameiListAtom, wameiListRes?.data || [])
       set(serviceErrorAtom, undefined)
