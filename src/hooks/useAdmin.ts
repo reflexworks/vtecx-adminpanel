@@ -30,6 +30,17 @@ const useAdmin = () => {
     }
   }, [])
 
+  const updateAccesstoken = React.useCallback(async () => {
+    try {
+      await fetcher(`/d/?_accesskey`, 'put')
+      getAccesstoken()
+      return true
+    } catch (error) {
+      setError(error)
+      return false
+    }
+  }, [])
+
   const getAPIKey = React.useCallback(async () => {
     try {
       const res = await fetcher(`/d/?e`, 'get')
@@ -45,11 +56,24 @@ const useAdmin = () => {
     }
   }, [])
 
+  const updateAPIKey = React.useCallback(async () => {
+    try {
+      await fetcher(`/d/?_apikey`, 'put')
+      getAPIKey()
+      return true
+    } catch (error) {
+      setError(error)
+      return false
+    }
+  }, [])
+
   return {
     error,
     getAccesstoken,
+    updateAccesstoken,
     accesstoken,
     getAPIKey,
+    updateAPIKey,
     apikey
   }
 }
