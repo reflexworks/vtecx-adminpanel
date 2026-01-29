@@ -11,13 +11,15 @@ export default function AlertDialog({
   open,
   onAgree,
   handleClose,
-  children
+  children,
+  color
 }: {
   title: string
   open: boolean
   onAgree: () => void
   handleClose: () => void
   children: React.ReactNode
+  color?: 'error'
 }) {
   return (
     <React.Fragment>
@@ -27,7 +29,9 @@ export default function AlertDialog({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+        <DialogTitle id="alert-dialog-title" color={color}>
+          {title}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{children}</DialogContentText>
         </DialogContent>
