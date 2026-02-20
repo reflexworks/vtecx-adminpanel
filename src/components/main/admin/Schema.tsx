@@ -168,7 +168,7 @@ const SchemaEditModal = ({
             clearOnEscape
           />
           <TextField
-            label="スキーマ名"
+            label="項目名"
             fullWidth
             value={formData.schema_name}
             onChange={e => handleChange('schema_name', e.target.value)}

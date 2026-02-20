@@ -46,15 +46,15 @@ const validation = (type: string, value: string) => {
         res.error = false
       } else {
         res.error = true
-        res.message = 'スキーマ名は半角英字から開始してください。'
+        res.message = '項目名は半角英字から開始してください。'
       }
     } else {
       res.error = true
       if (value) {
         res.message =
-          'スキーマ名に不正な文字が入力されています。小文字の半角英数とアンダーバー（_）が使用可能です。'
+          '項目名に不正な文字が入力されています。小文字の半角英数とアンダーバー（_）が使用可能です。'
       } else {
-        res.message = 'スキーマ名を入力してください。'
+        res.message = '項目名を入力してください。'
       }
     }
   }
