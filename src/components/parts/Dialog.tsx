@@ -28,6 +28,7 @@ export default function AlertDialog({
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        data-testid="delete-confirm-dialog"
       >
         <DialogTitle id="alert-dialog-title" color={color}>
           {title}
@@ -36,8 +37,10 @@ export default function AlertDialog({
           <DialogContentText id="alert-dialog-description">{children}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>キャンセル</Button>
-          <Button onClick={onAgree} autoFocus>
+          <Button onClick={handleClose} data-testid="delete-confirm-cancel">
+            キャンセル
+          </Button>
+          <Button onClick={onAgree} autoFocus data-testid="delete-confirm-ok">
             OK
           </Button>
         </DialogActions>

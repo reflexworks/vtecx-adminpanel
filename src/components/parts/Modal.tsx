@@ -19,11 +19,13 @@ const style = {
 export default function BasicModal({
   open,
   handleClose,
-  children
+  children,
+  'data-testid': dataTestId
 }: {
   open: boolean
   handleClose: () => void
   children: React.ReactNode
+  'data-testid'?: string
 }) {
   return (
     <Modal
@@ -32,7 +34,9 @@ export default function BasicModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>{children}</Box>
+      <Box sx={style} data-testid={dataTestId}>
+        {children}
+      </Box>
     </Modal>
   )
 }
