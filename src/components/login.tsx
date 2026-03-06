@@ -50,7 +50,6 @@ export const Login = (_props: any) => {
       }
     } catch (err) {
       // reCAPTCHA が取得できない場合はサーバーに行かずリトライさせる
-
       setError('セキュリティ確認に失敗しました。しばらくしてから再度お試しください。')
       return
     }
@@ -106,6 +105,9 @@ export const Login = (_props: any) => {
             slotProps={{
               inputLabel: {
                 shrink: true
+              },
+              htmlInput: {
+                'data-testid': 'account-id',
               }
             }}
           />
@@ -122,6 +124,9 @@ export const Login = (_props: any) => {
             slotProps={{
               inputLabel: {
                 shrink: true
+              },
+              htmlInput: {
+                'data-testid': 'password',
               }
             }}
           />
@@ -129,25 +134,36 @@ export const Login = (_props: any) => {
       </Grid>
       <Grid size={{ xs: 12, md: md }}>
         <FormControl fullWidth variant="outlined">
-          <Button variant="contained" size="small" onClick={handleSubmit}>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleSubmit}
+            data-testid="login-button"
+          >
             ログイン
           </Button>
         </FormControl>
         {error && (
-          <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+          <Typography
+            variant="caption"
+            color={red[900]}
+            paddingTop={3}
+            component={'div'}
+            data-testid="error-message"
+          >
             {error}
           </Typography>
         )}
       </Grid>
       <Grid size={{ xs: 12, md: md }} textAlign={'center'}>
-        <Link href={'forgot_password.html'}>
+        <Link href={'forgot_password.html'} data-testid="forgot-password-link">
           <Typography variant="caption">パスワードをお忘れの方はこちら</Typography>
         </Link>
       </Grid>
       <Grid size={{ xs: 12, md: md }} textAlign={'center'}>
         <Typography variant="caption">
           まだvte.cxのアカウントをお持ちでない方は
-          <Link href={'signup.html'}>
+          <Link href={'signup.html'} data-testid="signup-link">
             <Typography variant="caption">アカウント登録</Typography>
           </Link>
           をお済ませください。

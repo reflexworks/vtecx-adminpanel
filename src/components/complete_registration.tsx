@@ -37,16 +37,21 @@ export const CompleteRegistration = (_props: any) => {
         </Stepper>
       </Grid>
       <Grid size={{ xs: 12, md: 5 }}>
-        <Typography variant="body2">本登録が完了しました。</Typography>
+        <Typography variant="body2" data-testid="complete-message">
+          本登録が完了しました。
+        </Typography>
       </Grid>
       <Grid size={{ xs: 12, md: 5 }}>
         <Typography variant="caption" component={'div'}>
-          <Link href={'login.html'}>ログインに戻る</Link>
+          <Link href={'login.html'} data-testid="back-to-login-link">
+            ログインに戻る
+          </Link>
         </Typography>
       </Grid>
     </Grid>
   )
 }
+
 const App: any = () => {
   return (
     <>

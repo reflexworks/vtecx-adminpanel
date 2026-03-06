@@ -143,7 +143,12 @@ export const ChangePassword = (_props: any) => {
       </Grid>
       {authStatus === 'checking' && (
         <Grid size={{ xs: 12, md: md }}>
-          <Typography variant="body2" component={'div'} paddingTop={10}>
+          <Typography
+            variant="body2"
+            component={'div'}
+            paddingTop={10}
+            data-testid="verifying-message"
+          >
             リンクを検証しています…
           </Typography>
         </Grid>
@@ -151,7 +156,13 @@ export const ChangePassword = (_props: any) => {
       {authStatus === 'invalid' && (
         <>
           <Grid size={{ xs: 12, md: md }}>
-            <Typography variant="body2" color={red[900]} component={'div'} paddingTop={10}>
+            <Typography
+              variant="body2"
+              color={red[900]}
+              component={'div'}
+              paddingTop={10}
+              data-testid="token-error-message"
+            >
               このリンクは無効か、有効期限が切れています。
             </Typography>
           </Grid>
@@ -187,7 +198,7 @@ export const ChangePassword = (_props: any) => {
             </Stepper>
           </Grid>
           {!is_completed && (
-            <>
+            <Grid size={{ xs: 12, md: md }} data-testid="change-password-form">
               <Grid size={{ xs: 12, md: md }}>
                 <Typography variant="body2">新しいパスワードを入力してください。</Typography>
               </Grid>
@@ -205,16 +216,32 @@ export const ChangePassword = (_props: any) => {
                     slotProps={{
                       inputLabel: {
                         shrink: true
+                      },
+                      htmlInput: {
+                        'data-testid': 'new-password'
                       }
                     }}
                     error={check_password}
                     onBlur={() => isRegistBtn()}
                   />
                 </FormControl>
-                <Typography variant="caption" color={check_password ? 'error' : undefined}>
-                  ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
-                  必要があります。
-                </Typography>
+                {check_password && (
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    component={'div'}
+                    data-testid="new-password-error"
+                  >
+                    ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
+                    必要があります。
+                  </Typography>
+                )}
+                {!check_password && (
+                  <Typography variant="caption">
+                    ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
+                    必要があります。
+                  </Typography>
+                )}
               </Grid>
               <Grid size={{ xs: 12, md: md }}>
                 <FormControl fullWidth variant="outlined">
@@ -230,12 +257,25 @@ export const ChangePassword = (_props: any) => {
                     slotProps={{
                       inputLabel: {
                         shrink: true
+                      },
+                      htmlInput: {
+                        'data-testid': 'new-password-confirm'
                       }
                     }}
                     error={check_password_re}
                     onBlur={() => isRegistBtn()}
                   />
                 </FormControl>
+                {check_password_re && (
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    component={'div'}
+                    data-testid="new-password-confirm-error"
+                  >
+                    パスワードが一致しません。
+                  </Typography>
+                )}
               </Grid>
               <Grid size={{ xs: 12, md: md }}>
                 <Button
@@ -243,6 +283,7 @@ export const ChangePassword = (_props: any) => {
                   fullWidth
                   disabled={is_regist_btn}
                   onClick={handleSubmit}
+                  data-testid="change-password-button"
                 >
                   パスワードを変更する
                 </Button>
@@ -252,16 +293,20 @@ export const ChangePassword = (_props: any) => {
                   </Typography>
                 )}
               </Grid>
-            </>
+            </Grid>
           )}
           {is_completed && (
             <Grid size={{ xs: 12, md: md }}>
-              <Typography>新しいパスワードへの変更が完了しました。</Typography>
+              <Typography data-testid="success-message">
+                新しいパスワードへの変更が完了しました。
+              </Typography>
             </Grid>
           )}
           <Grid size={{ xs: 12, md: md }}>
             <Typography variant="caption" component={'div'}>
-              <Link href={'login.html'}>ログインに戻る</Link>
+              <Link href={'login.html'} data-testid="back-to-login-link">
+                ログインに戻る
+              </Link>
             </Typography>
           </Grid>
         </>

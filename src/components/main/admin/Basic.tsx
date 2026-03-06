@@ -48,7 +48,9 @@ const Basic = () => {
         <Alert severity={'error'}>{error?.response?.data?.feed.title}</Alert>
       </Box>
       <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
-        <Alert severity={messeage?.type}>{messeage?.value}</Alert>
+        <Alert severity={messeage?.type} data-testid="success-alert">
+          {messeage?.value}
+        </Alert>
       </Box>
       <Box paddingBottom={3}>
         <OutlinedCard
@@ -70,12 +72,13 @@ const Basic = () => {
             value={service_name}
             readOnly
             sx={{ sm: '100%' }}
+            data-testid="service-name"
           />
         </OutlinedCard>
       </Box>
       <Box paddingBottom={3}>
         <OutlinedCard title={'APIKEY'}>
-          <CopyableDisplay value={apikey} />
+          <CopyableDisplay value={apikey} data-testid="copy-apikey-button" />
           <Button
             color={'success'}
             variant="contained"
@@ -83,6 +86,7 @@ const Basic = () => {
             onClick={() => {
               setApikeyDialog(true)
             }}
+            data-testid="update-apikey-button"
           >
             APIKEYの更新
           </Button>
@@ -90,7 +94,7 @@ const Basic = () => {
       </Box>
       <Box paddingBottom={3}>
         <OutlinedCard title={'アクセストークン'}>
-          <CopyableDisplay value={accesstoken} />
+          <CopyableDisplay value={accesstoken} data-testid="copy-token-button" />
           <Button
             color={'success'}
             variant="contained"
@@ -98,6 +102,7 @@ const Basic = () => {
             onClick={() => {
               setTokenDialog(true)
             }}
+            data-testid="update-token-button"
           >
             アクセストークンの更新
           </Button>
@@ -111,6 +116,9 @@ const Basic = () => {
           setTokenDialog(false)
         }}
         color="error"
+        data-testid="update-token-dialog"
+        cancelTestId="update-token-cancel"
+        okTestId="dialog-ok-button"
       >
         <Typography component={'span'}>
           更新すると、これまで
@@ -128,6 +136,9 @@ const Basic = () => {
           setApikeyDialog(false)
         }}
         color="error"
+        data-testid="update-apikey-dialog"
+        cancelTestId="update-apikey-cancel"
+        okTestId="dialog-ok-button"
       >
         <Typography component={'span'}>
           更新すると、これまで

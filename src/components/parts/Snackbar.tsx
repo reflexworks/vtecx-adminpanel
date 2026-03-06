@@ -11,6 +11,7 @@ export default function AlertSnackbar() {
       onClose={handleClose}
       message={message}
       autoHideDuration={1000}
+      data-testid="success-snackbar"
     />
   )
 }

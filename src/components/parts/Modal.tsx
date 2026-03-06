@@ -1,6 +1,8 @@
 import * as React from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 const style = {
   position: 'absolute',
@@ -19,11 +21,13 @@ const style = {
 export default function BasicModal({
   open,
   handleClose,
-  children
+  children,
+  'data-testid': dataTestId
 }: {
   open: boolean
   handleClose: () => void
   children: React.ReactNode
+  'data-testid'?: string
 }) {
   return (
     <Modal
@@ -32,7 +36,17 @@ export default function BasicModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>{children}</Box>
+      <Box sx={{ ...style, position: 'absolute' }} data-testid={dataTestId}>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          data-testid="schema-modal-close"
+          sx={{ position: 'absolute', top: 8, right: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+        {children}
+      </Box>
     </Modal>
   )
 }

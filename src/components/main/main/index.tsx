@@ -135,6 +135,7 @@ const Main = () => {
             aria-haspopup="true"
             onClick={handleMenu}
             color="inherit"
+            data-testid="account-icon"
           >
             <AccountCircle />
           </IconButton>
@@ -163,7 +164,7 @@ const Main = () => {
               <Typography variant="body2">{account?.title}</Typography>
             </MenuItem>
             <Divider sx={{ display: { md: 'none' } }} />
-            <MenuItem onClick={logout}>
+            <MenuItem onClick={logout} data-testid="logout-button">
               <Typography variant="body2">ログアウト</Typography>
             </MenuItem>
           </Menu>

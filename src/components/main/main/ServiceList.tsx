@@ -49,7 +49,7 @@ const CreateServiceModal = ({
   const [success, setSuccess] = React.useState<ValidationProps>({ error: true, message: '' })
 
   return (
-    <BasicModal open={open} handleClose={handleClose}>
+    <BasicModal open={open} handleClose={handleClose} data-testid="create-service-modal">
       <Typography variant="h6">サービス新規作成</Typography>
       <Box paddingTop={5}>
         <TextField
@@ -57,6 +57,9 @@ const CreateServiceModal = ({
           slotProps={{
             inputLabel: {
               shrink: true
+            },
+            htmlInput: {
+              'data-testid': 'service-name-input'
             }
           }}
           fullWidth
@@ -69,14 +72,28 @@ const CreateServiceModal = ({
           }}
         />
 
-        <Typography
-          variant="caption"
-          sx={{ display: success.error ? 'block' : undefined }}
-          paddingTop={2}
-          color={'error'}
-        >
-          {success.message}
-        </Typography>
+        {success.error && success.message && (
+          <Typography
+            variant="caption"
+            paddingTop={2}
+            color={'error'}
+            component={'div'}
+            data-testid="service-name-error"
+          >
+            {success.message}
+          </Typography>
+        )}
+        {(!success.error || !success.message) && (
+          <Typography
+            variant="caption"
+            paddingTop={2}
+            color={'error'}
+            component={'div'}
+            sx={{ visibility: 'hidden' }}
+          >
+            &nbsp;
+          </Typography>
+        )}
 
         <Box paddingTop={2}>
           <Button
@@ -84,6 +101,7 @@ const CreateServiceModal = ({
             variant="outlined"
             onClick={handleClose}
             style={{ marginRight: '15px' }}
+            data-testid="create-cancel-button"
           >
             キャンセル
           </Button>
@@ -93,6 +111,7 @@ const CreateServiceModal = ({
             onClick={handleCreateService}
             startIcon={<Add />}
             disabled={success.error}
+            data-testid="create-confirm-button"
           >
             新規作成
           </Button>
@@ -162,7 +181,7 @@ const ServiceList = () => {
       setMesseage({ type: 'error', value: `${delete_service_name}の削除に失敗しました。` })
     }
     setDialog(false)
-  }, [])
+  }, [delete_service_name])
 
   return (
     <MainContainer
@@ -176,7 +195,12 @@ const ServiceList = () => {
               </IconButton>
             </div>
           </Tooltip>
-          <Button variant="contained" onClick={handleCreateClick} startIcon={<Add />}>
+          <Button
+            variant="contained"
+            onClick={handleCreateClick}
+            startIcon={<Add />}
+            data-testid="create-service-button"
+          >
             新規作成
           </Button>
           <CreateServiceModal
@@ -193,11 +217,19 @@ const ServiceList = () => {
       <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
         <Alert severity={messeage?.type}>{messeage?.value}</Alert>
       </Box>
-      <Alert severity="info" sx={{ display: entrys && entrys.length === 0 ? 'block' : 'none' }}>
+      <Alert
+        severity="info"
+        data-testid="no-service-alert"
+        sx={{ display: entrys && entrys.length === 0 ? 'block' : 'none' }}
+      >
         <AlertTitle>サービスを作成してください。</AlertTitle>
         「新規作成」ボタンからサービスを作成して開始してください。
       </Alert>
-      <TableContainer component={Paper} hidden={!entrys || (entrys && entrys.length === 0)}>
+      <TableContainer
+        component={Paper}
+        hidden={!entrys || (entrys && entrys.length === 0)}
+        data-testid="service-table"
+      >
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -225,14 +257,12 @@ const ServiceList = () => {
                   status !== 'deleted' && (
                     <TableRow
                       key={entry.id}
+                      data-testid={`service-row-${service_name}`}
                       sx={{
                         '&:last-child td, &:last-child th': { border: 0 },
-                        backgroundColor: status === 'production' ? lightGreen[50] : undefined, // 薄い青 (MUIのblue.50)
-
-                        // hover時に適用されるスタイル
+                        backgroundColor: status === 'production' ? lightGreen[50] : undefined,
                         '&:hover': {
-                          // ホバー時に少し濃い色にすることで、効果を強調
-                          backgroundColor: status === 'production' ? lightGreen[100] : grey[100] // 薄い青より少し濃い色 (MUIのblue.100)
+                          backgroundColor: status === 'production' ? lightGreen[100] : grey[100]
                         }
                       }}
                     >
@@ -244,6 +274,7 @@ const ServiceList = () => {
                           label={status === 'production' ? 'Pro' : 'Free'}
                           variant={status === 'production' ? undefined : 'outlined'}
                           color={status === 'production' ? 'success' : undefined}
+                          data-testid={`plan-chip-${service_name}`}
                         />
                       </TableCell>
                       <TableCell component="th" scope="row">
@@ -286,6 +317,7 @@ const ServiceList = () => {
                       </TableCell>
                       <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                         <Button
+                          data-testid={`admin-link-${service_name}`}
                           onClick={() => {
                             location.href = `redirect.html?service_name=${service_name}`
                           }}
@@ -294,6 +326,7 @@ const ServiceList = () => {
                         </Button>
                         <Button
                           color="error"
+                          data-testid={`delete-service-${service_name}`}
                           onClick={async () => {
                             setMesseage(undefined)
                             setDeleteServiceName(service_name)

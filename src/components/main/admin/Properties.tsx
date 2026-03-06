@@ -62,12 +62,22 @@ const Properties = () => {
           </Alert>
         </Box>
 
-        <TableContainer component={Paper} hidden={properties && properties.length <= 0}>
+        <TableContainer
+          component={Paper}
+          hidden={properties && properties.length <= 0}
+          data-testid="properties-table"
+        >
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell align="left">キー</TableCell>
-                <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                <TableCell align="left" data-testid="prop-col-key">
+                  キー
+                </TableCell>
+                <TableCell
+                  align="left"
+                  sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                  data-testid="prop-col-value"
+                >
                   値
                 </TableCell>
               </TableRow>
@@ -138,6 +148,7 @@ const Properties = () => {
           </Alert>
         </Box>
         <Box
+          data-testid="registration-mail-body"
           sx={{
             whiteSpace: 'pre',
             fontFamily: 'monospace',
@@ -186,6 +197,7 @@ const Properties = () => {
           </Alert>
         </Box>
         <Box
+          data-testid="password-mail-body"
           sx={{
             whiteSpace: 'pre',
             fontFamily: 'monospace',

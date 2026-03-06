@@ -90,8 +90,8 @@ export const ForgotPassword = (_props: any) => {
       <Grid size={{ xs: 12, md: md }} textAlign={'left'} paddingTop={5}>
         <Stepper activeStep={active_step} alternativeLabel sx={{ mb: 4, mx: 'auto' }}>
           {['本人確認用メール送信', 'メール送信完了', 'パスワード変更', 'パスワード変更完了'].map(
-            (label: any) => (
-              <Step key={label}>
+            (label: any, index: number) => (
+              <Step key={label} data-testid={`stepper-step${index + 1}`}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             )
@@ -125,6 +125,9 @@ export const ForgotPassword = (_props: any) => {
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    'data-testid': 'email'
                   }
                 }}
                 onBlur={() => isRegistBtn()}
@@ -132,11 +135,23 @@ export const ForgotPassword = (_props: any) => {
             </FormControl>
           </Grid>
           <Grid size={{ xs: 12, md: md }}>
-            <Button variant="contained" fullWidth disabled={is_regist_btn} onClick={handleSubmit}>
+            <Button
+              variant="contained"
+              fullWidth
+              disabled={is_regist_btn}
+              onClick={handleSubmit}
+              data-testid="send-mail-button"
+            >
               メールを送信する
             </Button>
             {error && (
-              <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+              <Typography
+                variant="caption"
+                color={red[900]}
+                paddingTop={3}
+                component={'div'}
+                data-testid="error-message"
+              >
                 {error}
               </Typography>
             )}
@@ -145,7 +160,7 @@ export const ForgotPassword = (_props: any) => {
       )}
       {is_completed && (
         <>
-          <Grid size={{ xs: 12, md: md }}>
+          <Grid size={{ xs: 12, md: md }} data-testid="send-complete-message">
             <Typography variant="body2">メールを送信しました。</Typography>
           </Grid>
           <Grid size={{ xs: 12, md: md }}>
@@ -160,7 +175,9 @@ export const ForgotPassword = (_props: any) => {
       )}
       <Grid size={{ xs: 12, md: md }}>
         <Typography variant="caption" component={'div'}>
-          <Link href={'login.html'}>ログインに戻る</Link>
+          <Link href={'login.html'} data-testid="back-to-login-link">
+            ログインに戻る
+          </Link>
         </Typography>
       </Grid>
     </Grid>

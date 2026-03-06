@@ -95,7 +95,6 @@ export const Signup = (_props: any) => {
     let captchaOpt = ''
     try {
       if (required_captcha) {
-        // 👇 action: adduser
         const token = await executeRecaptcha('adduser')
         captchaOpt = '&g-recaptcha-token=' + encodeURIComponent(token)
       }
@@ -150,8 +149,8 @@ export const Signup = (_props: any) => {
       </Grid>
       <Grid size={{ xs: 12, md: md }} textAlign={'left'} paddingTop={5}>
         <Stepper activeStep={active_step} alternativeLabel sx={{ width: '85%', mb: 3, mx: 'auto' }}>
-          {['仮登録', '仮登録完了', '本登録完了'].map((label: any) => (
-            <Step key={label}>
+          {['仮登録', '仮登録完了', '本登録完了'].map((label: any, index: number) => (
+            <Step key={label} data-testid={`stepper-step${index + 1}`}>
               <StepLabel>{label}</StepLabel>
             </Step>
           ))}
@@ -179,11 +178,24 @@ export const Signup = (_props: any) => {
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    'data-testid': 'email'
                   }
                 }}
                 onBlur={() => isRegistBtn()}
               />
             </FormControl>
+            {check_email && (
+              <Typography
+                variant="caption"
+                color="error"
+                component={'div'}
+                data-testid="email-error"
+              >
+                メールアドレスの形式が正しくありません。
+              </Typography>
+            )}
           </Grid>
           <Grid size={{ xs: 12, md: md }}>
             <FormControl fullWidth variant="outlined">
@@ -200,12 +212,19 @@ export const Signup = (_props: any) => {
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    'data-testid': 'password'
                   }
                 }}
                 onBlur={() => isRegistBtn()}
               />
             </FormControl>
-            <Typography variant="caption" color={check_password ? 'error' : undefined}>
+            <Typography
+              variant="caption"
+              color={check_password ? 'error' : undefined}
+              data-testid="password-hint"
+            >
               ご使用するパスワードは<b>8文字以上で、かつ数字・英字・記号を最低1文字含む</b>
               必要があります。
             </Typography>
@@ -225,11 +244,24 @@ export const Signup = (_props: any) => {
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    'data-testid': 'password-confirm'
                   }
                 }}
                 onBlur={() => isRegistBtn()}
               />
             </FormControl>
+            {check_password_re && (
+              <Typography
+                variant="caption"
+                color="error"
+                component={'div'}
+                data-testid="password-confirm-error"
+              >
+                パスワードが一致しません。
+              </Typography>
+            )}
           </Grid>
           <Grid size={{ xs: 12, md: md }}>
             <Typography>利用規約に同意の上、仮登録ボタンを押下してください。</Typography>
@@ -240,10 +272,14 @@ export const Signup = (_props: any) => {
                 setTerms1(checked)
                 isRegistBtn(String(checked), 'terms1')
               }}
-              control={<Checkbox />}
+              control={<Checkbox data-testid="terms-checkbox" />}
               label={
                 <Typography variant="caption">
-                  「<Link href={'user_terms.html'}>利用規約</Link>」に同意します。
+                  「
+                  <Link href={'user_terms.html'} data-testid="terms-link">
+                    利用規約
+                  </Link>
+                  」に同意します。
                 </Typography>
               }
             />
@@ -253,11 +289,23 @@ export const Signup = (_props: any) => {
               上記メールアドレスに本登録用のメールを送信します。メールが届きましたら、
               <b>本文のリンクをクリックして本登録を完了</b>してください。
             </Typography>
-            <Button variant="contained" fullWidth disabled={is_regist_btn} onClick={handleSubmit}>
+            <Button
+              variant="contained"
+              fullWidth
+              disabled={is_regist_btn}
+              onClick={handleSubmit}
+              data-testid="signup-button"
+            >
               アカウントの仮登録をする
             </Button>
             {error && (
-              <Typography variant="caption" color={red[900]} paddingTop={3} component={'div'}>
+              <Typography
+                variant="caption"
+                color={red[900]}
+                paddingTop={3}
+                component={'div'}
+                data-testid="error-message"
+              >
                 {error}
               </Typography>
             )}
@@ -266,7 +314,7 @@ export const Signup = (_props: any) => {
       )}
       {is_completed && (
         <>
-          <Grid size={{ xs: 12, md: md }}>
+          <Grid size={{ xs: 12, md: md }} data-testid="signup-complete-message">
             <Typography>仮登録が完了しました。</Typography>
           </Grid>
           <Grid size={{ xs: 12, md: md }}>
@@ -281,7 +329,9 @@ export const Signup = (_props: any) => {
       )}
       <Grid size={{ xs: 12, md: md }}>
         <Typography variant="caption" component={'div'}>
-          <Link href={'login.html'}>ログインに戻る</Link>
+          <Link href={'login.html'} data-testid="back-to-login-link">
+            ログインに戻る
+          </Link>
         </Typography>
       </Grid>
     </Grid>

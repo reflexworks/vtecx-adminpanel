@@ -63,6 +63,7 @@ const LoginHistory = () => {
             <IconButton
               size="small"
               aria-label="refresh"
+              data-testid="refresh-button"
               onClick={() => {
                 getLoginHistoryList({ page: 1, page_count: 50 })
               }}
@@ -76,20 +77,20 @@ const LoginHistory = () => {
       <Box paddingBottom={2} display={log_error ? 'block' : 'none'}>
         <Alert severity={'error'}>{log_error?.response?.data.feed.title}</Alert>
       </Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} data-testid="history-table">
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell data-testid="history-col-datetime">
                 <Typography variant="caption">日時</Typography>
               </TableCell>
-              <TableCell align="left">
+              <TableCell align="left" data-testid="history-col-type-ip">
                 <Typography variant="caption" component={'div'}>
                   区分
                 </Typography>
                 <Typography variant="caption">IP</Typography>
               </TableCell>
-              <TableCell align="left">
+              <TableCell align="left" data-testid="history-col-uid-account">
                 <Typography variant="caption" component={'div'}>
                   UID
                 </Typography>
@@ -144,7 +145,6 @@ const LoginHistory = () => {
         sx={{
           borderRadius: 1,
           padding: theme.spacing(1),
-
           display: log_count ? 'flex' : 'none',
           justifyContent: 'flex-end',
           alignItems: 'center',
@@ -160,14 +160,29 @@ const LoginHistory = () => {
         </Typography>
 
         <Box sx={{ display: 'flex' }}>
-          <IconButton size="small" onClick={prevCount} disabled={page === 1}>
+          <IconButton
+            size="small"
+            onClick={prevCount}
+            disabled={page === 1}
+            data-testid="pagination-prev"
+          >
             <KeyboardArrowLeft />
           </IconButton>
+
+          <Typography
+            variant="body2"
+            color="inherit"
+            sx={{ alignSelf: 'center', minWidth: '2em', textAlign: 'center' }}
+            data-testid="pagination-current"
+          >
+            {page}
+          </Typography>
 
           <IconButton
             size="small"
             onClick={nextCount}
             disabled={log_count ? parseInt(log_count) / page_count <= page : true}
+            data-testid="pagination-next"
           >
             <KeyboardArrowRight />
           </IconButton>
