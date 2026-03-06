@@ -58,6 +58,7 @@ const Log = () => {
             <IconButton
               size="small"
               aria-label="refresh"
+              data-testid="refresh-button"
               onClick={() => {
                 getLogList({ page: 1, page_count: 50 })
               }}
@@ -71,14 +72,14 @@ const Log = () => {
       <Box paddingBottom={2} display={log_error ? 'block' : 'none'}>
         <Alert severity={'error'}>{log_error?.response?.data.feed.title}</Alert>
       </Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} data-testid="log-table">
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell data-testid="log-col-datetime">
                 <Typography variant="caption">日時</Typography>
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="center" data-testid="log-col-level">
                 <Typography variant="caption">レベル</Typography>
               </TableCell>
               <TableCell align="left">
@@ -103,9 +104,18 @@ const Log = () => {
                     : level === 'INFO'
                       ? 'info'
                       : undefined
+              const rowTestId =
+                level === 'ERROR'
+                  ? 'log-row-error'
+                  : level === 'WARN'
+                    ? 'log-row-warn'
+                    : level === 'INFO'
+                      ? 'log-row-info'
+                      : 'log-row'
               return (
                 <TableRow
                   key={entry.id}
+                  data-testid={rowTestId}
                   sx={{
                     '&:last-child td, &:last-child th': { border: 0 },
                     background: level === 'ERROR' ? red[50] : undefined
@@ -148,7 +158,6 @@ const Log = () => {
         sx={{
           borderRadius: 1,
           padding: theme.spacing(1),
-
           display: log_count ? 'flex' : 'none',
           justifyContent: 'flex-end',
           alignItems: 'center',
@@ -164,7 +173,12 @@ const Log = () => {
         </Typography>
 
         <Box sx={{ display: 'flex' }}>
-          <IconButton size="small" onClick={prevCount} disabled={page === 1}>
+          <IconButton
+            size="small"
+            onClick={prevCount}
+            disabled={page === 1}
+            data-testid="pagination-prev"
+          >
             <KeyboardArrowLeft />
           </IconButton>
 
@@ -172,6 +186,7 @@ const Log = () => {
             size="small"
             onClick={nextCount}
             disabled={log_count ? parseInt(log_count) / page_count <= page : true}
+            data-testid="pagination-next"
           >
             <KeyboardArrowRight />
           </IconButton>

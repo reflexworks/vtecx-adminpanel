@@ -3,7 +3,13 @@ import { Box, Typography, IconButton, useTheme } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import useSnackbar from '../../hooks/useSnackbar'
 
-const CopyableDisplay = ({ value }: { value?: string }) => {
+const CopyableDisplay = ({
+  value,
+  'data-testid': dataTestId
+}: {
+  value?: string
+  'data-testid'?: string
+}) => {
   const theme = useTheme()
 
   const { setOpen, setMessage } = useSnackbar()
@@ -48,7 +54,12 @@ const CopyableDisplay = ({ value }: { value?: string }) => {
         {value}
       </Typography>
 
-      <IconButton onClick={handleCopy} size="small" sx={{ display: value ? undefined : 'none' }}>
+      <IconButton
+        onClick={handleCopy}
+        size="small"
+        sx={{ display: value ? undefined : 'none' }}
+        data-testid={dataTestId}
+      >
         <ContentCopyIcon fontSize="small" />
       </IconButton>
     </Box>

@@ -73,7 +73,7 @@ const ChangeStatusModal = ({
   const margin = 4
 
   return (
-    <BasicModal open={open} handleClose={handleClose}>
+    <BasicModal open={open} handleClose={handleClose} data-testid="status-change-modal">
       <Typography variant="h6">ステータス変更</Typography>
       <Box paddingTop={5} component={'form'} noValidate autoComplete="off">
         <FormControl>
@@ -85,17 +85,35 @@ const ChangeStatusModal = ({
               setType(e.target.value)
             }}
           >
-            <FormControlLabel value="delete" control={<Radio />} label="削除" />
+            <FormControlLabel
+              value="delete"
+              control={<Radio />}
+              label="削除"
+              data-testid="radio-delete"
+            />
             {user?.status === 'Activated' && (
-              <FormControlLabel value="revokeuser" control={<Radio />} label="無効" />
+              <FormControlLabel
+                value="revokeuser"
+                control={<Radio />}
+                label="無効"
+                data-testid="radio-disable"
+              />
             )}
             {user?.status === 'Revoked' && (
-              <FormControlLabel value="activateuser" control={<Radio />} label="有効" />
+              <FormControlLabel
+                value="activateuser"
+                control={<Radio />}
+                label="有効"
+                data-testid="radio-enable"
+              />
             )}
           </RadioGroup>
         </FormControl>
         <Box paddingBottom={2} display={type ? 'block' : 'none'}>
-          <Alert severity={type === 'delete' ? 'error' : 'info'}>
+          <Alert
+            severity={type === 'delete' ? 'error' : 'info'}
+            data-testid={type === 'revokeuser' ? 'disable-warning-alert' : undefined}
+          >
             {type === 'delete' && '削除したユーザのデータは復元できません。よろしいでしょうか？'}
             {type === 'revokeuser' &&
               'このアカウントを無効にしログインできなくします。よろしいでしょうか？'}
@@ -118,6 +136,7 @@ const ChangeStatusModal = ({
             onClick={handleChange}
             startIcon={<Edit />}
             disabled={!type}
+            data-testid="apply-button"
           >
             適用
           </Button>
@@ -225,25 +244,27 @@ const Users = () => {
       }
     >
       <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
-        <Alert severity={messeage?.type}>{messeage?.value}</Alert>
+        <Alert severity={messeage?.type} data-testid="status-update-alert">
+          {messeage?.value}
+        </Alert>
       </Box>
       <Box paddingBottom={2} display={user_error ? 'block' : 'none'}>
         <Alert severity={'error'}>{user_error?.response?.data.feed.title}</Alert>
       </Box>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} data-testid="user-table">
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell data-testid="user-col-acl">
                 <Typography variant="caption">ACL権限</Typography>
               </TableCell>
-              <TableCell align="left">
+              <TableCell align="left" data-testid="user-col-account">
                 <Typography variant="caption" component={'div'}>
                   UID
                 </Typography>
                 <Typography variant="caption">アカウント</Typography>
               </TableCell>
-              <TableCell align="left">
+              <TableCell align="left" data-testid="user-col-status">
                 <Typography variant="caption">状態</Typography>
               </TableCell>
               <TableCell align="left">
@@ -270,9 +291,13 @@ const Users = () => {
               }
               const is_admin = Boolean(admin_user[uid])
               return (
-                <TableRow key={entry.id} hover>
+                <TableRow key={entry.id} hover data-testid={`user-row-${uid}`}>
                   <TableCell align="left">
-                    <Typography variant="caption" color={is_admin ? green[800] : grey[800]}>
+                    <Typography
+                      variant="caption"
+                      color={is_admin ? green[800] : grey[800]}
+                      data-testid={is_admin ? 'admin-label' : undefined}
+                    >
                       {is_admin ? '管理者' : '一般ユーザ'}
                     </Typography>
                   </TableCell>
@@ -293,7 +318,8 @@ const Users = () => {
                             setShowChangeModal(true)
                           }
                         }}
-                        deleteIcon={<KeyboardArrowDown />}
+                        deleteIcon={<KeyboardArrowDown data-testid={`status-chip-toggle-${uid}`} />}
+                        data-testid={`status-chip-${uid}`}
                       />
                     </Typography>
                   </TableCell>
@@ -332,14 +358,28 @@ const Users = () => {
         </Typography>
 
         <Box sx={{ display: 'flex' }}>
-          <IconButton size="small" onClick={prevCount} disabled={page === 1}>
+          <IconButton
+            size="small"
+            onClick={prevCount}
+            disabled={page === 1}
+            data-testid="pagination-prev"
+          >
             <KeyboardArrowLeft />
           </IconButton>
+
+          <Typography
+            variant="body2"
+            sx={{ alignSelf: 'center', px: 1 }}
+            data-testid="pagination-current"
+          >
+            {page}
+          </Typography>
 
           <IconButton
             size="small"
             onClick={nextCount}
             disabled={user_count ? parseInt(user_count) / page_count <= page : true}
+            data-testid="pagination-next"
           >
             <KeyboardArrowRight />
           </IconButton>

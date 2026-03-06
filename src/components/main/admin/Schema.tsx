@@ -143,7 +143,7 @@ const SchemaEditModal = ({
       ]
 
   return (
-    <BasicModal open={open} handleClose={handleClose}>
+    <BasicModal open={open} handleClose={handleClose} data-testid="schema-modal">
       <Typography variant="h6">
         {editEntry?.schema_name ? 'スキーマ編集' : 'スキーマ追加'}
       </Typography>
@@ -161,6 +161,10 @@ const SchemaEditModal = ({
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    ...params.inputProps,
+                    'data-testid': 'schema-parent-path'
                   }
                 }}
               />
@@ -172,11 +176,18 @@ const SchemaEditModal = ({
             fullWidth
             value={formData.schema_name}
             onChange={e => handleChange('schema_name', e.target.value)}
-            error={valid.error}
-            helperText={valid.message}
+            error={valid.error && formData.schema_name !== ''}
+            helperText={
+              valid.error && formData.schema_name !== '' ? (
+                <span data-testid="schema-field-error">{valid.message}</span>
+              ) : undefined
+            }
             slotProps={{
               inputLabel: {
                 shrink: true
+              },
+              htmlInput: {
+                'data-testid': 'schema-field-name'
               }
             }}
           />
@@ -197,9 +208,10 @@ const SchemaEditModal = ({
               value={formData.type}
               label="型"
               onChange={e => handleChange('type', e.target.value)}
+              SelectDisplayProps={{ 'data-testid': 'type-dropdown' } as any}
             >
               {typeOptions.map(opt => (
-                <MenuItem key={opt} value={opt}>
+                <MenuItem key={opt} value={opt} data-testid={`type-option-${opt}`}>
                   {opt}
                 </MenuItem>
               ))}
@@ -231,6 +243,8 @@ const SchemaEditModal = ({
                   size="small"
                   color="primary"
                   variant="outlined"
+                  data-testid={`search-index-chip-${option}`}
+                  deleteIcon={<span data-testid="chip-delete">×</span>}
                 />
               ))
             }
@@ -242,6 +256,10 @@ const SchemaEditModal = ({
                 slotProps={{
                   inputLabel: {
                     shrink: true
+                  },
+                  htmlInput: {
+                    ...params.inputProps,
+                    'data-testid': 'search-index-input'
                   }
                 }}
               />
@@ -309,6 +327,7 @@ const SchemaEditModal = ({
             }}
             disabled={valid.error || !formData.schema_name}
             startIcon={editEntry?.schema_name ? <Edit /> : <Add />}
+            data-testid="schema-save-button"
           >
             {editEntry?.schema_name ? '更新' : '保存'}
           </Button>
@@ -390,6 +409,7 @@ const Schema = () => {
               setOldName(null)
               setShowModal(true)
             }}
+            data-testid="add-schema-button"
           >
             追加
           </Button>
@@ -414,11 +434,11 @@ const Schema = () => {
         </Alert>
       </Box>
 
-      <TableContainer component={Paper} sx={{ mt: 2 }}>
+      <TableContainer component={Paper} sx={{ mt: 2 }} data-testid="schema-table">
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell data-testid="schema-col-janame">
                 <Typography variant="caption" component={'div'}>
                   和名
                 </Typography>
@@ -426,7 +446,9 @@ const Schema = () => {
                   項目名
                 </Typography>
               </TableCell>
-              <TableCell align="center">型</TableCell>
+              <TableCell align="center" data-testid="schema-col-type">
+                型
+              </TableCell>
               <TableCell align="left">検索index</TableCell>
               <TableCell align="left">全文検索</TableCell>
               <TableCell>操作</TableCell>
@@ -448,6 +470,7 @@ const Schema = () => {
                   hover
                   key={fullPath + idx}
                   style={{ background: hasChild ? green[50] : undefined }}
+                  data-testid={`schema-row-${schema.schema_name}`}
                 >
                   <TableCell>
                     <Typography variant="caption" color={grey[700]} component={'div'}>
@@ -475,14 +498,22 @@ const Schema = () => {
                     <Stack direction="row" justifyContent="flex-end">
                       {!hasChild && (
                         <Tooltip title="編集">
-                          <IconButton size="small" onClick={() => handleEdit(schema)}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEdit(schema)}
+                            data-testid="edit-icon"
+                          >
                             <Edit fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       )}
                       {isStringOrNone && (
                         <Tooltip title="子の項目を追加">
-                          <IconButton size="small" onClick={() => handleAddChild(fullPath)}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleAddChild(fullPath)}
+                            data-testid="add-child-icon"
+                          >
                             <Add fontSize="small" />
                           </IconButton>
                         </Tooltip>

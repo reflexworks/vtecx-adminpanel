@@ -83,6 +83,7 @@ const Admin = () => {
           <ListItemButton
             selected={!!matchPath('/basic', pathname) || pathname === '/'}
             href="admin.html#/basic"
+            data-testid="sidebar-basic"
           >
             <ListItemIcon>
               <SettingsOutlined />
@@ -91,7 +92,11 @@ const Admin = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton href="admin.html#/log" selected={!!matchPath('/log', pathname)}>
+          <ListItemButton
+            href="admin.html#/log"
+            selected={!!matchPath('/log', pathname)}
+            data-testid="sidebar-log"
+          >
             <ListItemIcon>
               <DescriptionOutlined />
             </ListItemIcon>
@@ -99,7 +104,11 @@ const Admin = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton href="admin.html#/endpoint" selected={!!matchPath('/endpoint', pathname)}>
+          <ListItemButton
+            href="admin.html#/endpoint"
+            selected={!!matchPath('/endpoint', pathname)}
+            data-testid="sidebar-endpoint"
+          >
             <ListItemIcon>
               <ApiOutlined />
             </ListItemIcon>
@@ -107,7 +116,11 @@ const Admin = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton href="admin.html#/schema" selected={!!matchPath('/schema', pathname)}>
+          <ListItemButton
+            href="admin.html#/schema"
+            selected={!!matchPath('/schema', pathname)}
+            data-testid="sidebar-schema"
+          >
             <ListItemIcon>
               <SchemaOutlined />
             </ListItemIcon>
@@ -115,7 +128,11 @@ const Admin = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton href="admin.html#/users" selected={!!matchPath('/users', pathname)}>
+          <ListItemButton
+            href="admin.html#/users"
+            selected={!!matchPath('/users', pathname)}
+            data-testid="sidebar-users"
+          >
             <ListItemIcon>
               <PeopleOutlined />
             </ListItemIcon>
@@ -126,6 +143,7 @@ const Admin = () => {
           <ListItemButton
             href="admin.html#/login_history"
             selected={!!matchPath('/login_history', pathname)}
+            data-testid="sidebar-login-history"
           >
             <ListItemIcon>
               <HistoryOutlined />
@@ -137,6 +155,7 @@ const Admin = () => {
           <ListItemButton
             href="admin.html#/properties"
             selected={!!matchPath('/properties', pathname)}
+            data-testid="sidebar-properties"
           >
             <ListItemIcon>
               <TuneOutlined />
@@ -162,6 +181,7 @@ const Admin = () => {
             aria-label="menu"
             sx={{ mr: 2 }}
             onClick={handleDrawerToggle}
+            data-testid="hamburger-icon"
           >
             <MenuOutlined />
           </IconButton>
@@ -189,6 +209,7 @@ const Admin = () => {
             aria-haspopup="true"
             onClick={handleMenu}
             color="inherit"
+            data-testid="account-icon"
           >
             <AccountCircle />
           </IconButton>
@@ -217,7 +238,7 @@ const Admin = () => {
               <Typography variant="body2">{account?.title}</Typography>
             </MenuItem>
             <Divider sx={{ display: { md: 'none' } }} />
-            <MenuItem onClick={logout}>
+            <MenuItem onClick={logout} data-testid="logout-button">
               <Typography variant="body2">ログアウト</Typography>
             </MenuItem>
           </Menu>
@@ -229,6 +250,7 @@ const Admin = () => {
           sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
           aria-label="mailbox folders"
         >
+          {/* モバイル用ドロワー (xs のみ表示) */}
           <Drawer
             container={container}
             variant="temporary"
@@ -242,11 +264,13 @@ const Admin = () => {
             slotProps={{
               root: {
                 keepMounted: true
-              }
+              },
+              paper: { 'data-testid': 'drawer' } as any
             }}
           >
             {drawer}
           </Drawer>
+          {/* デスクトップ用サイドバー (sm以上で常時表示) */}
           <Drawer
             variant="permanent"
             sx={{
@@ -254,6 +278,7 @@ const Admin = () => {
               '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
             }}
             open
+            slotProps={{ paper: { 'data-testid': 'sidebar' } as any }}
           >
             {drawer}
           </Drawer>

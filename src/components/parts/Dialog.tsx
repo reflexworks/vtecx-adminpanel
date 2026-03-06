@@ -12,7 +12,10 @@ export default function AlertDialog({
   onAgree,
   handleClose,
   children,
-  color
+  color,
+  'data-testid': dataTestId = 'delete-confirm-dialog',
+  cancelTestId = 'delete-confirm-cancel',
+  okTestId = 'delete-confirm-ok'
 }: {
   title: string
   open: boolean
@@ -20,6 +23,9 @@ export default function AlertDialog({
   handleClose: () => void
   children: React.ReactNode
   color?: 'error'
+  'data-testid'?: string
+  cancelTestId?: string
+  okTestId?: string
 }) {
   return (
     <React.Fragment>
@@ -28,7 +34,7 @@ export default function AlertDialog({
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        data-testid="delete-confirm-dialog"
+        data-testid={dataTestId}
       >
         <DialogTitle id="alert-dialog-title" color={color}>
           {title}
@@ -37,10 +43,10 @@ export default function AlertDialog({
           <DialogContentText id="alert-dialog-description">{children}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} data-testid="delete-confirm-cancel">
+          <Button onClick={handleClose} data-testid={cancelTestId}>
             キャンセル
           </Button>
-          <Button onClick={onAgree} autoFocus data-testid="delete-confirm-ok">
+          <Button onClick={onAgree} autoFocus data-testid={okTestId}>
             OK
           </Button>
         </DialogActions>

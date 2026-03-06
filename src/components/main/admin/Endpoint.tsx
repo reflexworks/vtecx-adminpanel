@@ -75,14 +75,27 @@ const CreateModal = ({
   const margin = 4
 
   return (
-    <BasicModal open={open} handleClose={handleClose}>
-      <Typography variant="h6">エンドポイント新規作成</Typography>
+    <BasicModal open={open} handleClose={handleClose} data-testid="ep-modal">
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">エンドポイント新規作成</Typography>
+        <IconButton
+          size="small"
+          onClick={handleClose}
+          data-testid="ep-modal-close"
+          aria-label="close"
+        >
+          ×
+        </IconButton>
+      </Box>
       <Box paddingTop={5} component={'form'} noValidate autoComplete="off">
         <TextField
           label="エンドポイント"
           slotProps={{
             inputLabel: {
               shrink: true
+            },
+            htmlInput: {
+              'data-testid': 'ep-name-input'
             }
           }}
           fullWidth
@@ -99,13 +112,16 @@ const CreateModal = ({
           disabled={Boolean(entry)}
         />
 
-        <Typography
-          variant="caption"
-          sx={{ display: success.error ? 'block' : undefined }}
-          color={'error'}
-        >
-          {success.message}
-        </Typography>
+        {success.error && success.message && (
+          <Typography
+            variant="caption"
+            sx={{ display: 'block' }}
+            color={'error'}
+            data-testid="ep-name-error"
+          >
+            {success.message}
+          </Typography>
+        )}
 
         <TextField
           label="エンドポイント（日本語）"
@@ -180,6 +196,7 @@ const CreateModal = ({
             onClick={handleCreate}
             startIcon={Boolean(entry) ? <Edit /> : <Add />}
             disabled={success.error}
+            data-testid="ep-save-button"
           >
             {Boolean(entry) ? '更新' : '新規作成'}
           </Button>
@@ -283,6 +300,7 @@ const Endpoint = () => {
             variant="contained"
             onClick={handleCreateClick}
             sx={{ display: { xs: 'inherit', md: 'none' } }}
+            data-testid="add-ep-button"
           >
             <Add />
           </Button>
@@ -291,6 +309,7 @@ const Endpoint = () => {
             onClick={handleCreateClick}
             startIcon={<Add />}
             sx={{ display: { xs: 'none', md: 'inherit' } }}
+            data-testid="add-ep-button"
           >
             追加
           </Button>
@@ -315,11 +334,15 @@ const Endpoint = () => {
       <Box paddingBottom={2} display={messeage ? 'block' : 'none'}>
         <Alert severity={messeage?.type}>{messeage?.value}</Alert>
       </Box>
-      <TableContainer component={Paper} hidden={entry.length === 0}>
+      <TableContainer component={Paper} hidden={entry.length === 0} data-testid="ep-table">
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="left" sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}>
+              <TableCell
+                align="left"
+                sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}
+                data-testid="ep-col-name"
+              >
                 エンドポイント
               </TableCell>
               <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
@@ -338,6 +361,10 @@ const Endpoint = () => {
             {entry.map((entry: VtecxApp.Entry) => {
               const endpoint_name = entry.id && entry.id.split(',')[0]
               const is_service = endpoint_name && endpoint_name.indexOf('/_') !== -1
+              // data-testid用: 先頭の'/'を除去して使用 (例: /users -> users, /_settings -> _settings)
+              const row_testid = endpoint_name
+                ? 'ep-row-' + endpoint_name.replace(/^\//, '')
+                : undefined
               const curd = entry.contributor
                 ? entry.contributor.map((contributor: VtecxApp.Contributor, index: number) => {
                     return (
@@ -356,6 +383,7 @@ const Endpoint = () => {
                   key={entry.id}
                   hover
                   sx={{ backgroundColor: is_service ? grey[100] : undefined }}
+                  data-testid={row_testid}
                 >
                   <TableCell align="left" sx={{ display: { xs: 'table-cell', md: 'table-cell' } }}>
                     <Typography
@@ -441,6 +469,7 @@ const Endpoint = () => {
                             setEditEntry(entry)
                             setShowCreateModal(true)
                           }}
+                          data-testid="edit-button"
                         >
                           編集
                         </Button>
@@ -451,6 +480,7 @@ const Endpoint = () => {
                             setDeleteeName(endpoint_name)
                             setDialog(true)
                           }}
+                          data-testid="delete-button"
                         >
                           削除
                         </Button>
