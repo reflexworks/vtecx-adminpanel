@@ -20,7 +20,6 @@ import {
 } from '@mui/material'
 import VtecxApp from '../../../typings'
 import dayjs from 'dayjs'
-import { Link } from 'react-router'
 import { grey, lightGreen } from '@mui/material/colors'
 import useService from '../../../hooks/useService'
 import AlertDialog from '../../parts/Dialog'
@@ -252,7 +251,7 @@ const ServiceList = () => {
                 const service_name = entry.id && entry.id.split(',')[0].replace('/_service/', '')
                 const status = entry.subtitle
                 const published = dayjs(entry.published).format('YYYY/MM/DD HH:mm:ss')
-                const link = `https://${service_name}.vte.cx`
+                //const link = `https://${service_name}.vte.cx`
                 return (
                   status !== 'deleted' && (
                     <TableRow
@@ -293,6 +292,7 @@ const ServiceList = () => {
                         >
                           {service_name}
                         </Typography>
+                        {/*
                         <Link to={`${link}`} target="_blank">
                           <Typography
                             variant="caption"
@@ -309,6 +309,7 @@ const ServiceList = () => {
                             {link}
                           </Typography>
                         </Link>
+                        */}
                       </TableCell>
                       <TableCell align="left" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                         <Typography variant="body2" color={grey[700]}>
