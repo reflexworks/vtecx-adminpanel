@@ -288,7 +288,6 @@ const ServiceList = () => {
                               md: '500px'
                             }
                           }}
-                          gutterBottom
                         >
                           {service_name}
                         </Typography>
