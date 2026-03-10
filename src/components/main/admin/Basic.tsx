@@ -137,7 +137,7 @@ const Basic = () => {
                   component="div"
                   marginBottom={2}
                 >
-                  今月のアクセス使用数
+                  今日のアクセス使用数
                 </Typography>
 
                 {isAccessCountLimitExceeded ? (
