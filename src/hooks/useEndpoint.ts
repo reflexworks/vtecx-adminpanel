@@ -1,11 +1,12 @@
-// useService.ts
+// useEndpoint.ts
 
 import React from 'react'
 import { checkGeneralError, fetcher, HttpError } from '../utils/fetcher'
-import { atom, useAtom, useSetAtom } from 'jotai' // useSetAtomをインポート
+import { atom, useAtom, useSetAtom } from 'jotai'
 import useUid from './useUid'
 import useLoader from './useLoader'
 import useGeneralError from './useGeneralError'
+import VtecxApp from '../typings'
 
 export const serviceListAtom = atom<any[]>([])
 
@@ -64,12 +65,14 @@ const useEndpoint = () => {
       name,
       name_jp,
       summary,
-      other
+      other,
+      contributor
     }: {
       name: string
       name_jp?: string
       summary?: string
       other?: string
+      contributor?: VtecxApp.Contributor[]
     }) => {
       setLoader(true)
       setError(undefined)
@@ -81,6 +84,7 @@ const useEndpoint = () => {
                   ______text: summary
                 }
               : undefined,
+            contributor: contributor && contributor.length > 0 ? contributor : undefined,
             link: [
               {
                 ___href: `/${name}`,
