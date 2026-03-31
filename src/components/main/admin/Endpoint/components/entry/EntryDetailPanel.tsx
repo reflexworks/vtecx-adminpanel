@@ -56,24 +56,34 @@ export const DetailHeader: React.FC<{
       <Box display="flex" gap={0.75} flexShrink={0}>
         {!isSystem && onAdd && (
           <Tooltip title="追加">
-            <IconButton size="small" onClick={onAdd} sx={{ color: 'success.main' }}>
+            <IconButton
+              size="small"
+              onClick={onAdd}
+              sx={{ color: 'success.main' }}
+              aria-label="追加"
+            >
               <Add fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
         {onRefresh && (
-          <IconButton size="small" onClick={onRefresh}>
+          <IconButton size="small" onClick={onRefresh} aria-label="更新">
             <Refresh fontSize="small" />
           </IconButton>
         )}
         {!isSystem && onDelete && (
           <Tooltip title="削除">
-            <IconButton size="small" onClick={onDelete} sx={{ color: 'error.main' }}>
+            <IconButton
+              size="small"
+              onClick={onDelete}
+              sx={{ color: 'error.main' }}
+              aria-label="削除"
+            >
               <DeleteOutline fontSize="small" />
             </IconButton>
           </Tooltip>
         )}
-        <IconButton size="small" onClick={onClose}>
+        <IconButton size="small" onClick={onClose} aria-label="戻る">
           <ArrowBack fontSize="small" />
         </IconButton>
       </Box>
@@ -98,20 +108,24 @@ export const EntryDetailPanel: React.FC<{
   const key = entry.link?.[0]?.___href ?? entry.id?.split(',')[0] ?? ''
   const isSystem = key.startsWith('/_')
 
-  const EditLink: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  const EditLink: React.FC<{ onClick: () => void; testId?: string }> = ({ onClick, testId }) => (
     <Link
       component="button"
       variant="caption"
       underline="hover"
       onClick={onClick}
       sx={{ color: blue[600], cursor: 'pointer', fontSize: '0.7rem' }}
+      data-testid={testId}
     >
       追加・変更
     </Link>
   )
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      data-testid="entry-detail-panel"
+    >
       {showHeader && (
         <DetailHeader
           entry={entry}
@@ -148,7 +162,9 @@ export const EntryDetailPanel: React.FC<{
               >
                 スキーマ
               </Typography>
-              {!isSystem && <EditLink onClick={() => setSchemaEditOpen(true)} />}
+              {!isSystem && (
+                <EditLink onClick={() => setSchemaEditOpen(true)} testId="edit-schema-link" />
+              )}
             </Box>
             <BasicInfoSection entry={entry} onNavigate={onNavigate} schemaOnly />
           </Box>
@@ -171,6 +187,7 @@ export const EntryDetailPanel: React.FC<{
             contributor={entry.contributor}
             onEdit={isSystem ? undefined : () => setAclEditOpen(true)}
             onNavigate={onNavigate}
+            editLinkTestId="edit-acl-link"
           />
           <Box>
             <Box
@@ -192,7 +209,9 @@ export const EntryDetailPanel: React.FC<{
               >
                 別名 (Alias)
               </Typography>
-              {!isSystem && <EditLink onClick={() => setAliasEditOpen(true)} />}
+              {!isSystem && (
+                <EditLink onClick={() => setAliasEditOpen(true)} testId="edit-alias-link" />
+              )}
             </Box>
             <BasicInfoSection entry={entry} onNavigate={onNavigate} aliasOnly hideTitle />
           </Box>
@@ -226,6 +245,8 @@ export const EntryDetailPanel: React.FC<{
           onDelete?.(key)
         }}
         handleClose={() => setDeleteDialog(false)}
+        cancelTestId="delete-confirm-cancel"
+        okTestId="delete-confirm-ok"
       >
         削除後は復旧できません。配下のデータもすべて削除されます。
       </AlertDialog>
@@ -246,7 +267,7 @@ export const EntryPreviewPanel: React.FC<{
   const key = entry.link?.[0]?.___href ?? entry.id?.split(',')[0] ?? ''
 
   return (
-    <Box>
+    <Box data-testid="entry-preview-panel">
       <DetailHeader
         entry={entry}
         onClose={onClose}
@@ -276,6 +297,8 @@ export const EntryPreviewPanel: React.FC<{
           onDelete?.(key)
         }}
         handleClose={() => setDeleteDialog(false)}
+        cancelTestId="delete-confirm-cancel"
+        okTestId="delete-confirm-ok"
       >
         削除後は復旧できません。配下のデータもすべて削除されます。
       </AlertDialog>

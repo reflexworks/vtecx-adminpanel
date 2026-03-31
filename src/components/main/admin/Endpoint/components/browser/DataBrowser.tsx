@@ -124,7 +124,6 @@ export const DataBrowser: React.FC = () => {
 
   const navigateTo = React.useCallback(
     async (path: string) => {
-      // ?e でエントリ詳細を取得してから一覧を表示（行クリックと同じ挙動）
       let detail: VtecxApp.Entry | undefined
       if (path !== '/') {
         try {
@@ -151,7 +150,6 @@ export const DataBrowser: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // 初回マウント
   React.useEffect(() => {
     const { path, page: p } = getBrowserParams()
     setPage(p)
@@ -164,7 +162,6 @@ export const DataBrowser: React.FC = () => {
     loadChildren(path, p)
   }, [])
 
-  // ブラウザ戻る/進む
   React.useEffect(() => {
     const handlePop = () => {
       const { path, page: p } = getBrowserParams()
@@ -262,6 +259,7 @@ export const DataBrowser: React.FC = () => {
           <Breadcrumbs
             separator={<ChevronRight fontSize="small" />}
             sx={{ flex: 1, '& .MuiBreadcrumbs-separator': { mx: 0.25 } }}
+            data-testid="breadcrumb-nav"
           >
             {breadcrumbs.map((b, i) =>
               i < breadcrumbs.length - 1 ? (
@@ -272,6 +270,7 @@ export const DataBrowser: React.FC = () => {
                   underline="hover"
                   onClick={() => navigateBreadcrumb(i)}
                   sx={{ color: blue[600], cursor: 'pointer', fontFamily: 'monospace' }}
+                  data-testid={i === 0 ? 'breadcrumb-root' : `breadcrumb-${b.label}`}
                 >
                   {b.label}
                 </Link>
@@ -280,30 +279,43 @@ export const DataBrowser: React.FC = () => {
                   key={b.path}
                   variant="caption"
                   sx={{ color: grey[700], fontFamily: 'monospace', fontWeight: 600 }}
+                  data-testid={i === 0 ? 'breadcrumb-root' : `breadcrumb-${b.label}`}
                 >
                   {b.label}
                 </Typography>
               )
             )}
           </Breadcrumbs>
-          {/* アクションボタン群（右寄せ・アイコン統一） */}
+          {/* アクションボタン群（右寄せ） */}
           <Box display="flex" alignItems="center" gap={0.25} flexShrink={0}>
             {currentPath === '/' && (
               <>
                 <Tooltip title="追加">
-                  <IconButton size="small" onClick={() => setAddModalOpen(true)}>
+                  <IconButton
+                    size="small"
+                    onClick={() => setAddModalOpen(true)}
+                    data-testid="add-entry-button"
+                  >
                     <Add fontSize="small" sx={{ color: teal[600] }} />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="リロード">
-                  <IconButton size="small" onClick={() => loadChildren(currentPath, page)}>
+                  <IconButton
+                    size="small"
+                    onClick={() => loadChildren(currentPath, page)}
+                    data-testid="reload-button"
+                  >
                     <Refresh fontSize="small" sx={{ color: grey[600] }} />
                   </IconButton>
                 </Tooltip>
               </>
             )}
             <Tooltip title="検索">
-              <IconButton size="small" onClick={() => setSearchModalOpen(true)}>
+              <IconButton
+                size="small"
+                onClick={() => setSearchModalOpen(true)}
+                data-testid="search-button"
+              >
                 <Search fontSize="small" sx={{ color: grey[600] }} />
               </IconButton>
             </Tooltip>
@@ -362,6 +374,7 @@ export const DataBrowser: React.FC = () => {
             severity={message.type}
             onClose={() => setMessage(undefined)}
             sx={{ mx: 1.5, mt: 1 }}
+            data-testid="browser-message"
           >
             {message.value}
           </Alert>
@@ -387,12 +400,12 @@ export const DataBrowser: React.FC = () => {
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {loading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 6 }}>
-              <CircularProgress size={28} />
+              <CircularProgress size={28} data-testid="browser-loading" />
             </Box>
           )}
           {error && !loading && (
             <Box sx={{ m: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Alert severity="error" sx={{ flex: 1 }}>
+              <Alert severity="error" sx={{ flex: 1 }} data-testid="browser-error">
                 {error}
               </Alert>
               <Button
@@ -400,6 +413,7 @@ export const DataBrowser: React.FC = () => {
                 size="small"
                 startIcon={<Refresh />}
                 onClick={() => loadChildren(currentPath, page)}
+                data-testid="browser-reload-button"
               >
                 リロード
               </Button>
@@ -415,9 +429,10 @@ export const DataBrowser: React.FC = () => {
                 py: 6,
                 gap: 1.5
               }}
+              data-testid="browser-empty"
             >
               <FolderOpen sx={{ fontSize: 40, color: grey[300] }} />
-              <Typography variant="body2" color={grey[500]}>
+              <Typography variant="body2" color={grey[500]} data-testid="browser-empty-message">
                 これより先にデータはありません
               </Typography>
               <Typography variant="caption" color={grey[400]}>
@@ -428,6 +443,7 @@ export const DataBrowser: React.FC = () => {
                 size="small"
                 startIcon={<Add />}
                 onClick={() => setAddModalOpen(true)}
+                data-testid="add-entry-button"
               >
                 データを追加
               </Button>
@@ -435,7 +451,7 @@ export const DataBrowser: React.FC = () => {
           )}
           {!loading && !error && entries.length > 0 && (
             <>
-              <TableContainer>
+              <TableContainer data-testid="entry-table">
                 <Table size="small" stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -462,7 +478,11 @@ export const DataBrowser: React.FC = () => {
                         {currentPath !== '/' && (
                           <Box display="flex" justifyContent="flex-end" gap={0.5}>
                             <Tooltip title="追加">
-                              <IconButton size="small" onClick={() => setAddModalOpen(true)}>
+                              <IconButton
+                                size="small"
+                                onClick={() => setAddModalOpen(true)}
+                                data-testid="add-entry-button"
+                              >
                                 <Add fontSize="small" sx={{ color: teal[600] }} />
                               </IconButton>
                             </Tooltip>
@@ -470,6 +490,7 @@ export const DataBrowser: React.FC = () => {
                               <IconButton
                                 size="small"
                                 onClick={() => loadChildren(currentPath, page)}
+                                data-testid="reload-button"
                               >
                                 <Refresh fontSize="small" />
                               </IconButton>
@@ -486,6 +507,7 @@ export const DataBrowser: React.FC = () => {
                         previewDetail?.link?.[0]?.___href === e.key ||
                         previewDetail?.id?.startsWith(e.key + ',')
                       const isNavigating = navigatingKey === e.key
+                      const entryName = e.name
                       return (
                         <TableRow
                           key={e.key}
@@ -506,6 +528,7 @@ export const DataBrowser: React.FC = () => {
                           onClick={() => {
                             if (!isNavigating) handleRowClick(e)
                           }}
+                          data-testid={`entry-row-${entryName}`}
                         >
                           <TableCell>
                             <Box display="flex" alignItems="center" gap={1}>
@@ -532,6 +555,7 @@ export const DataBrowser: React.FC = () => {
                                     color: isSystem ? grey[600] : grey[900]
                                   }}
                                   noWrap
+                                  data-testid={`entry-name-${entryName}`}
                                 >
                                   {e.entry.title ?? e.name}
                                 </Typography>
@@ -565,6 +589,7 @@ export const DataBrowser: React.FC = () => {
                                 size="small"
                                 onClick={() => handleViewDetail(e)}
                                 sx={{ color: isPreviewing ? teal[600] : blue[400] }}
+                                data-testid={`detail-button-${entryName}`}
                               >
                                 <InfoOutlined fontSize="small" />
                               </IconButton>
@@ -602,10 +627,15 @@ export const DataBrowser: React.FC = () => {
                   size="small"
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page <= 1}
+                  data-testid="pagination-prev"
                 >
                   <KeyboardArrowLeft fontSize="small" />
                 </IconButton>
-                <Typography variant="caption" sx={{ minWidth: 24, textAlign: 'center' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ minWidth: 24, textAlign: 'center' }}
+                  data-testid="pagination-current"
+                >
                   {page}
                 </Typography>
                 <IconButton
@@ -614,6 +644,7 @@ export const DataBrowser: React.FC = () => {
                   disabled={
                     totalPages !== undefined ? page >= totalPages : entries.length < PAGE_SIZE
                   }
+                  data-testid="pagination-next"
                 >
                   <KeyboardArrowRight fontSize="small" />
                 </IconButton>
@@ -656,5 +687,3 @@ export const DataBrowser: React.FC = () => {
     </Box>
   )
 }
-
-// ─── メインコンポーネント ─────────────────────────────────────

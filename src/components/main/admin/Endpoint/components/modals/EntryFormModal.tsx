@@ -364,7 +364,14 @@ export const EntryFormModal: React.FC<{
   const showAclStep = !isEdit ? step === 2 : step === 1
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
+      data-testid="entry-form-dialog"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1, pb: 1 }}>
         <Box flex={1}>
           {isEdit ? '編集' : '追加'}
@@ -518,15 +525,19 @@ export const EntryFormModal: React.FC<{
               onBlur={handleKeyBlur}
               error={!keyValid || Boolean(keyError)}
               helperText={
-                !keyValid
-                  ? 'vte.cxのキーに使用できない文字が含まれています。'
-                  : keyError
-                    ? keyError
-                    : keyChecking
-                      ? '確認中...'
-                      : isRoot
-                        ? 'ルート直下への追加はキーが必須です。'
-                        : '省略した場合、サーバーがキーを自動生成します。'
+                !keyValid ? (
+                  <span data-testid="key-error">
+                    vte.cxのキーに使用できない文字が含まれています。
+                  </span>
+                ) : keyError ? (
+                  <span data-testid="key-error">{keyError}</span>
+                ) : keyChecking ? (
+                  '確認中...'
+                ) : isRoot ? (
+                  'ルート直下への追加はキーが必須です。'
+                ) : (
+                  '省略した場合、サーバーがキーを自動生成します。'
+                )
               }
               slotProps={{
                 input: {
@@ -545,7 +556,8 @@ export const EntryFormModal: React.FC<{
                       </Typography>
                     </InputAdornment>
                   ),
-                  endAdornment: keyChecking ? <CircularProgress size={14} /> : undefined
+                  endAdornment: keyChecking ? <CircularProgress size={14} /> : undefined,
+                  inputProps: { 'data-testid': 'key-input' }
                 }
               }}
             />
@@ -651,6 +663,7 @@ export const EntryFormModal: React.FC<{
             disabled={!canSubmit || submitting}
             onClick={handleSubmit}
             startIcon={submitting ? <CircularProgress size={14} /> : isEdit ? <Edit /> : <Add />}
+            data-testid="submit-entry-button"
           >
             {isEdit ? '更新' : '追加'}
           </Button>

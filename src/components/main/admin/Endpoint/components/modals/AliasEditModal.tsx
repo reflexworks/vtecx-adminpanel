@@ -194,7 +194,10 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
             }}
             slotProps={{
               inputLabel: { shrink: true },
-              input: { endAdornment: loading ? <CircularProgress size={14} /> : undefined }
+              input: {
+                endAdornment: loading ? <CircularProgress size={14} /> : undefined,
+                inputProps: { 'data-testid': 'alias-key-input' }
+              }
             }}
           />
         </Box>
@@ -204,6 +207,7 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
           disabled={!canAdd}
           startIcon={<Add />}
           sx={{ flexShrink: 0, whiteSpace: 'nowrap', height: 40 }}
+          data-testid="alias-add-button"
         >
           追加
         </Button>
@@ -302,7 +306,14 @@ export const AliasEditModal: React.FC<{
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      scroll="paper"
+      data-testid="alias-edit-dialog"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
         <Box flex={1}>
           <Typography fontWeight={700}>別名 (Alias) 編集</Typography>
@@ -376,6 +387,7 @@ export const AliasEditModal: React.FC<{
           disabled={submitting || aliases.length === 0}
           onClick={handleSubmit}
           startIcon={submitting ? <CircularProgress size={14} /> : <Edit />}
+          data-testid="alias-save-button"
         >
           更新
         </Button>

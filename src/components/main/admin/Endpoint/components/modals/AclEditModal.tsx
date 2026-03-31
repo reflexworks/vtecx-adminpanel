@@ -110,7 +110,14 @@ export const AclEditModal: React.FC<{
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      scroll="paper"
+      data-testid="acl-edit-dialog"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
         <Box flex={1}>
           <Typography fontWeight={700}>権限 (ACL) 編集</Typography>
@@ -146,6 +153,7 @@ export const AclEditModal: React.FC<{
           disabled={submitting}
           onClick={handleSubmit}
           startIcon={submitting ? <CircularProgress size={14} /> : <Edit />}
+          data-testid="acl-save-button"
         >
           更新
         </Button>

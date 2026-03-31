@@ -424,7 +424,10 @@ const PathInput: React.FC<{
           }
           onKeyDown={handleKeyDown}
           slotProps={{
-            input: { endAdornment: loading ? <CircularProgress size={14} /> : undefined }
+            input: {
+              endAdornment: loading ? <CircularProgress size={14} /> : undefined,
+              inputProps: { 'data-testid': 'search-path-input' }
+            }
           }}
         />
       </Box>
@@ -601,7 +604,14 @@ export const SearchModal: React.FC<{
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
+      data-testid="search-dialog"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
         <Search fontSize="small" sx={{ color: blue[500] }} />
         <Box flex={1}>
@@ -653,7 +663,13 @@ export const SearchModal: React.FC<{
                   クリア
                 </Button>
               )}
-              <Button size="small" startIcon={<Add />} onClick={addCondition} variant="outlined">
+              <Button
+                size="small"
+                startIcon={<Add />}
+                onClick={addCondition}
+                variant="outlined"
+                data-testid="search-condition-add"
+              >
                 条件を追加
               </Button>
             </Box>
@@ -826,7 +842,10 @@ export const SearchModal: React.FC<{
               )}
 
               {!loading && results.length > 0 && (
-                <Box sx={{ border: `1px solid ${grey[200]}`, borderRadius: 1, overflow: 'hidden' }}>
+                <Box
+                  sx={{ border: `1px solid ${grey[200]}`, borderRadius: 1, overflow: 'hidden' }}
+                  data-testid="search-result-table"
+                >
                   <Table size="small">
                     <TableHead>
                       <TableRow>
@@ -940,6 +959,7 @@ export const SearchModal: React.FC<{
           startIcon={loading ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <Search />}
           onClick={handleSearch}
           disabled={loading}
+          data-testid="search-execute-button"
         >
           検索
         </Button>

@@ -232,7 +232,14 @@ export const SchemaEditModal: React.FC<{
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      scroll="paper"
+      data-testid="schema-edit-dialog"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
         <Box flex={1}>
           <Typography fontWeight={700}>スキーマ編集</Typography>
@@ -303,6 +310,7 @@ export const SchemaEditModal: React.FC<{
           disabled={submitting || customFields.some(cf => cf.error)}
           onClick={handleSubmit}
           startIcon={submitting ? <CircularProgress size={14} /> : <Edit />}
+          data-testid="schema-save-button"
         >
           更新
         </Button>

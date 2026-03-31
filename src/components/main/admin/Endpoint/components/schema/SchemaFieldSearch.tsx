@@ -216,7 +216,8 @@ export const SchemaFieldSearch: React.FC<{
               <CircularProgress size={14} />
             ) : (
               <Search fontSize="small" sx={{ color: grey[400] }} />
-            )
+            ),
+            inputProps: { 'data-testid': 'schema-field-search' }
           }
         }}
       />

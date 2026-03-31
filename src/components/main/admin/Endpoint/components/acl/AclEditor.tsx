@@ -147,7 +147,10 @@ const GroupSelector: React.FC<GroupSelectorProps> = ({
               <InputAdornment position="start">
                 <Search fontSize="small" sx={{ color: grey[400] }} />
               </InputAdornment>
-            )
+            ),
+            inputProps: {
+              'data-testid': 'group-search-input'
+            }
           }
         }}
         onBlur={() =>
@@ -605,6 +608,7 @@ const AclEntryCard: React.FC<{
               size="small"
               onClick={onRemove}
               sx={{ ml: 1, flexShrink: 0, color: grey[400], '&:hover': { color: red[400] } }}
+              aria-label="このグループを削除"
             >
               <DeleteOutline fontSize="small" />
             </IconButton>
@@ -824,12 +828,14 @@ export const AclBadges: React.FC<{ contributors?: VtecxApp.Contributor[] }> = ({
 }
 
 // ─── ACL セクション（データ詳細表示用）──────────────────────────
+// editLinkTestId prop を追加
 
 export const AclSection: React.FC<{
   contributor?: VtecxApp.Contributor[]
   onEdit?: () => void
   onNavigate?: (path: string) => void
-}> = ({ contributor, onEdit, onNavigate }) => {
+  editLinkTestId?: string
+}> = ({ contributor, onEdit, onNavigate, editLinkTestId }) => {
   const aclEntries = (contributor ?? [])
     .map(c => (c.uri?.startsWith('urn:vte.cx:acl:') ? parseContributorUri(c.uri!) : null))
     .filter((x): x is AclEntry => x !== null)
@@ -864,6 +870,7 @@ export const AclSection: React.FC<{
             underline="hover"
             onClick={onEdit}
             sx={{ color: blue[600], cursor: 'pointer', fontSize: '0.7rem' }}
+            data-testid={editLinkTestId}
           >
             追加・変更
           </Link>
