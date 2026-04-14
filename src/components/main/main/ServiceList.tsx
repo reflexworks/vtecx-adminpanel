@@ -615,7 +615,13 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      data-testid="delete-confirm-dialog"
+    >
       <DialogTitle
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
       >
@@ -674,7 +680,13 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      data-testid="delete-confirm-dialog"
+    >
       <DialogTitle
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
       >
@@ -695,7 +707,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           削除したデータは復旧できません。この操作は取り消せません。
         </Alert>
         {isPro && (
-          <Alert severity="warning" sx={{ mb: 2, fontSize: 13 }}>
+          <Alert severity="warning" sx={{ mb: 2, fontSize: 13 }} data-testid="delete-pro-warning">
             このサービスはPro契約中です。削除するとサブスクリプションも解除されます。
           </Alert>
         )}
@@ -707,6 +719,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           size="small"
           placeholder={PASSPHRASE}
           value={input}
+          inputProps={{ 'data-testid': 'delete-passphrase-input' }}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
           error={input.length > 0 && input !== PASSPHRASE}
           helperText={
@@ -717,7 +730,13 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
         />
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 3, gap: 1.5 }}>
-        <Button variant="outlined" onClick={handleClose} disabled={processing} sx={{ flex: 1 }}>
+        <Button
+          variant="outlined"
+          onClick={handleClose}
+          disabled={processing}
+          sx={{ flex: 1 }}
+          data-testid="delete-cancel-button"
+        >
           キャンセル
         </Button>
         <Button
@@ -726,6 +745,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           onClick={handleConfirm}
           disabled={input !== PASSPHRASE || processing}
           sx={{ flex: 2 }}
+          data-testid="delete-confirm-button"
           startIcon={
             processing ? (
               <CircularProgress size={16} color="inherit" />

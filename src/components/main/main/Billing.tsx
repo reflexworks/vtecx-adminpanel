@@ -132,8 +132,8 @@ const CustomerPortalButton: React.FC = () => {
     setError('')
     try {
       await openBillingPortal()
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'ポータルURLの取得に失敗しました。')
+    } catch {
+      setError('ポータルURLの取得に失敗しました。')
     } finally {
       setLoading(false)
     }
@@ -182,8 +182,8 @@ const BillingPage: React.FC = () => {
           : []
       const parsed = rawList.map(parseServiceEntry).filter((e): e is ServiceEntry => e !== null)
       setServices(parsed)
-    } catch (e: unknown) {
-      setFetchError(e instanceof Error ? e.message : 'データ取得に失敗しました。')
+    } catch {
+      setFetchError('データ取得に失敗しました。')
     } finally {
       setLoading(false)
     }

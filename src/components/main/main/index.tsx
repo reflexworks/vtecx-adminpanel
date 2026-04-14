@@ -168,7 +168,7 @@ const Main = () => {
               onClick={() => {
                 location.href = 'change_password.html'
               }}
-              data-testid="logout-button"
+              data-testid="change-password-button"
             >
               <Typography variant="body2">パスワード変更</Typography>
             </MenuItem>
