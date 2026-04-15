@@ -6,6 +6,8 @@ import Loader from './parts/Loader'
 import Main from './main/main'
 import ServiceList from './main/main/ServiceList'
 import Billing from './main/main/Billing'
+import PaymentSuccess from './main/main/PaymentSuccess'
+import PaymentFailure from './main/main/PaymentFailure'
 
 function App() {
   const router = createHashRouter([
@@ -19,6 +21,14 @@ function App() {
         {
           path: '/billing',
           Component: Billing
+        },
+        {
+          path: '/payment/success',
+          Component: PaymentSuccess
+        },
+        {
+          path: '/payment/failure',
+          Component: PaymentFailure
         },
         {
           path: '*',

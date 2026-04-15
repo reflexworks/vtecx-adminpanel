@@ -8,7 +8,8 @@ import VtecxApp from '../typings'
 import useLoader from './useLoader'
 import useGeneralError from './useGeneralError'
 
-export const serviceListAtom = atom<any[] | undefined>()
+// undefined = 未取得、[] = 取得済みだが空、Entry[] = 取得済みデータあり
+export const serviceListAtom = atom<any[] | undefined>(undefined)
 
 const listLoadingPromiseAtom = atom<Promise<void> | null>(null)
 
@@ -41,13 +42,16 @@ const fetchListAtom = atom(null, async (get, set, uid: string) => {
         })
       }
 
-      set(serviceListAtom, listRes?.data || [])
+      // 204など data が null/undefined の場合も [] として確定させループを防ぐ
+      set(serviceListAtom, listRes?.data ?? [])
       set(serviceErrorAtom, undefined)
     } catch (error) {
       console.error('Service list fetch failed:', error)
       if (error instanceof HttpError) {
         set(serviceErrorAtom, error)
       }
+      // エラー時も [] を入れて未取得状態（undefined）のままにしない
+      set(serviceListAtom, [])
     } finally {
       set(listLoadingPromiseAtom, null)
     }
@@ -130,7 +134,9 @@ const useService = () => {
   )
 
   React.useEffect(() => {
-    if (uid && (!list || (list && list.length === 0))) {
+    // list が undefined（＝まだ一度も取得していない）ときのみ自動 fetch する
+    // [] は「取得済みで空」なので再 fetch しない → ループ防止
+    if (uid && list === undefined) {
       get().catch(err => {
         console.error('Initial list fetch failed via get():', err)
       })
