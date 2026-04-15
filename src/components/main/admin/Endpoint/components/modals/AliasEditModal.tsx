@@ -21,23 +21,27 @@ import { grey, teal, blue } from '@mui/material/colors'
 import VtecxApp from '../../../../../../typings'
 import { fetcher } from '../../../../../../utils/fetcher'
 
-const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> = ({
-  onAdd,
-  selfKey = ''
-}) => {
+const AliasInput: React.FC<{ onAdd: (href: string) => void }> = ({ onAdd }) => {
   const [value, setValue] = React.useState('/')
   const [candidates, setCandidates] = React.useState<string[]>([])
   const [loading, setLoading] = React.useState(false)
   const [searched, setSearched] = React.useState(false)
   const [dropOpen, setDropOpen] = React.useState(false)
-  const [confirmedValues, setConfirmedValues] = React.useState<Set<string>>(new Set())
-  const [validHrefs, setValidHrefs] = React.useState<Set<string>>(new Set())
+  // 親パスが実在するパスのセット（例: /test が存在すれば /test が入る）
+  const [validParents, setValidParents] = React.useState<Set<string>>(new Set())
+  // 自身が存在しないと確認済みのパスのセット
+  const [nonExistentValues, setNonExistentValues] = React.useState<Set<string>>(new Set())
   const [activeIdx, setActiveIdx] = React.useState(-1)
   const existenceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const listRef = React.useRef<HTMLUListElement>(null)
 
+  // 追加可能条件: 親パスが実在し（validParents）、かつ自身が存在しない（nonExistentValues）
+  const parentPath = value.includes('/') ? value.slice(0, value.lastIndexOf('/')) || '/' : '/'
   const canAdd =
-    value !== '/' && value.trim() !== '' && (confirmedValues.has(value) || validHrefs.has(value))
+    value !== '/' &&
+    value.trim() !== '' &&
+    validParents.has(parentPath) &&
+    nonExistentValues.has(value)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const inputBoxRef = React.useRef<HTMLDivElement>(null)
 
@@ -57,13 +61,12 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
       const entries: any[] = Array.isArray(res.data) ? res.data : []
       const hrefs = entries
         .map(e => e.link?.find((l: any) => l.___rel === 'self')?.___href ?? '')
-        .filter(h => h && !h.startsWith('/_'))
+        // ルート直下の検索時のみ /_* のシステムエントリを除外する
+        .filter(h => h && (path !== '/' || !h.startsWith('/_')))
       setCandidates(hrefs)
-      setValidHrefs(prev => {
-        const s = new Set(prev)
-        hrefs.forEach(h => s.add(h))
-        return s
-      })
+      // 末尾スラッシュを除いた検索パスを「実在する親」として登録
+      const normalizedPath = path === '/' ? '/' : path.replace(/\/$/, '')
+      setValidParents(prev => new Set(prev).add(normalizedPath))
       setDropOpen(true)
     } catch {
       setCandidates([])
@@ -79,14 +82,34 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
 
   const checkExistence = React.useCallback(async (path: string) => {
     if (!path || path === '/') return
-    if (!isValidPath(path)) return // 不正パスは存在チェックしない
+    if (!isValidPath(path)) return
+    // 親パスの存在チェック
+    const parent = path.slice(0, path.lastIndexOf('/')) || '/'
+    try {
+      if (parent !== '/') {
+        const parentRes = await fetcher(`/d${parent}?e`, 'get')
+        // 親が存在しない(204/404) → 追加不可
+        if (parentRes.status === 204) return
+      }
+      setValidParents(prev => new Set(prev).add(parent))
+    } catch {
+      // 親が存在しない → 追加不可
+      return
+    }
+    // 自身の存在チェック（存在しないことを確認）
     try {
       const res = await fetcher(`/d${path}?e`, 'get')
-      // 204 = データなし → 存在しない
-      if (res.status === 204) return
-      setValidHrefs(prev => new Set(prev).add(path))
+      if (res.status === 204) {
+        // 204 = 存在しない → 追加可能
+        setNonExistentValues(prev => new Set(prev).add(path))
+      }
+      // 存在する → 追加不可（nonExistentValues に追加しない）
     } catch (err: any) {
-      // 404 や 400 など → 存在しない or 不正パス → 追加しない
+      if (err?.response?.status === 404) {
+        // 存在しない → 追加可能
+        setNonExistentValues(prev => new Set(prev).add(path))
+      }
+      // それ以外のエラー → 追加不可
     }
   }, [])
 
@@ -102,7 +125,7 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
       searchCandidates(v)
     } else {
       setDropOpen(false)
-      if (v !== '/' && !validHrefs.has(v) && !confirmedValues.has(v)) {
+      if (v !== '/') {
         if (existenceTimerRef.current) clearTimeout(existenceTimerRef.current)
         existenceTimerRef.current = setTimeout(() => checkExistence(v), 400)
       }
@@ -125,20 +148,23 @@ const AliasInput: React.FC<{ onAdd: (href: string) => void; selfKey?: string }> 
   }
 
   const handleSelect = (href: string) => {
-    setValue(href)
-    setConfirmedValues(prev => new Set(prev).add(href))
+    // ドロップダウンで親パスを選択 → 末尾に "/" を付けてセグメント追加入力を促す
+    const withSlash = href.endsWith('/') ? href : href + '/'
+    setValue(withSlash)
+    setValidParents(prev => new Set(prev).add(href))
     setDropOpen(false)
     setCandidates([])
     setSearched(false)
     setActiveIdx(-1)
+    // "/" 末尾なので候補を再検索
+    searchCandidates(withSlash)
   }
 
   const handleAdd = () => {
     const v = value.trim()
     if (!v || v === '/' || !canAdd) return
-    // 選択した候補パス + 自分のキーを結合
-    const aliasHref = selfKey ? `${v.replace(/\/$/, '')}/${selfKey}` : v
-    onAdd(aliasHref)
+    // 入力値をそのまま Alias キーとして使用する
+    onAdd(v)
     setValue('/')
     setCandidates([])
     setSearched(false)
@@ -327,18 +353,12 @@ export const AliasEditModal: React.FC<{
       </DialogTitle>
       <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         {/* 新規追加 */}
-        {(() => {
-          const selfKey = entryKey.split('/').filter(Boolean).pop() ?? ''
-          return (
-            <AliasInput
-              selfKey={selfKey}
-              onAdd={href => {
-                if (!href || aliases.some(a => a.href === href)) return
-                setAliases(prev => [...prev, { href }])
-              }}
-            />
-          )
-        })()}
+        <AliasInput
+          onAdd={href => {
+            if (!href || aliases.some(a => a.href === href)) return
+            setAliases(prev => [...prev, { href }])
+          }}
+        />
         {/* 一覧 */}
         {aliases.length === 0 ? (
           <Typography variant="caption" color={grey[400]}>
@@ -369,6 +389,8 @@ export const AliasEditModal: React.FC<{
                 size="small"
                 onClick={() => setAliases(prev => prev.filter((_, j) => j !== i))}
                 sx={{ color: grey[400] }}
+                data-testid={`alias-delete-${i}`}
+                aria-label={`${a.href} を削除`}
               >
                 <Close fontSize="small" />
               </IconButton>
@@ -384,7 +406,7 @@ export const AliasEditModal: React.FC<{
         <Button
           variant="contained"
           color="success"
-          disabled={submitting || aliases.length === 0}
+          disabled={submitting}
           onClick={handleSubmit}
           startIcon={submitting ? <CircularProgress size={14} /> : <Edit />}
           data-testid="alias-save-button"

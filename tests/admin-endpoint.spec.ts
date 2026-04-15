@@ -97,6 +97,18 @@ const MOCK_ROOT_ENTRIES: any[] = [
   }
 ]
 
+// Alias テスト用: alternate link が1件設定済みの /users エントリ
+const MOCK_USERS_WITH_ALIAS: any = {
+  id: '/users,1',
+  title: 'ユーザー',
+  link: [
+    { ___href: '/users', ___rel: 'self' },
+    { ___href: '/items/users-alias', ___rel: 'alternate' }
+  ],
+  contributor: [{ uri: 'urn:vte.cx:acl:/_group/$admin,CRUD' }, { uri: 'urn:vte.cx:acl:+,R' }],
+  updated: '2024-01-01T00:00:00Z'
+}
+
 const MOCK_CHILD_ENTRIES: any[] = [
   {
     id: '/users/u001,1',
@@ -591,11 +603,12 @@ test.describe('管理画面 - エンドポイント管理 - E2E（Alias編集）
     await page.route('**/d/users?f**', (route: any) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) })
     )
+    // Alias テストでは alternate link 付きエントリを返す
     await page.route('**/d/users?e**', (route: any) =>
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(MOCK_ROOT_ENTRIES[0])
+        body: JSON.stringify(MOCK_USERS_WITH_ALIAS)
       })
     )
     await login(page, EP_URL)
@@ -623,25 +636,24 @@ test.describe('管理画面 - エンドポイント管理 - E2E（Alias編集）
   // No.35
   test('Alias更新成功でモーダルが閉じる', async ({ page }) => {
     await mockPutSuccess(page)
-    // alias-save-button は aliases.length === 0 のとき disabled なので
-    // まず alias を1件追加してから保存する
-    // /items を選択してドロップダウンから /items を確定する代わりに、
-    // 入力欄に直接 /items と入力して存在チェックをモックで通す
-    await page.route('**/d/items?e**', (route: any) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(MOCK_ROOT_ENTRIES[1])
-      })
-    )
-    await page.fill('[data-testid="alias-key-input"]', '/items')
-    // 存在チェック完了を待ってから追加ボタンが活性になる
-    await expect(page.locator('[data-testid="alias-add-button"]')).toBeEnabled({ timeout: 5000 })
-    await page.click('[data-testid="alias-add-button"]')
-    // aliases に1件追加されたので save-button が活性になる
+    // beforeEach で MOCK_USERS_WITH_ALIAS を使用しているため
+    // モーダルを開いた時点で aliases に /items/users-alias が1件存在する
+    // → alias-save-button が活性な状態でそのまま保存できる
     await expect(page.locator('[data-testid="alias-save-button"]')).toBeEnabled()
     await page.click('[data-testid="alias-save-button"]')
     await expect(page.locator('[data-testid="alias-edit-dialog"]')).not.toBeVisible()
+  })
+
+  // No.36a（Alias削除）
+  test('Alias削除ボタンで一覧からエントリが消える', async ({ page }) => {
+    // beforeEach で MOCK_USERS_WITH_ALIAS を使用しているため /items/users-alias が表示されている
+    await expect(page.locator('text=/items/users-alias')).toBeVisible()
+    // 削除ボタン（0番目）をクリック
+    await page.click('[data-testid="alias-delete-0"]')
+    // 一覧から消える
+    await expect(page.locator('text=/items/users-alias')).not.toBeVisible()
+    // aliases が0件でも更新ボタンは活性のまま（全削除して保存できる）
+    await expect(page.locator('[data-testid="alias-save-button"]')).toBeEnabled()
   })
 })
 

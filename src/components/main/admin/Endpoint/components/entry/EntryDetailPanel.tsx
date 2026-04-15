@@ -19,7 +19,7 @@ export const DetailHeader: React.FC<{
   onRefresh?: () => void
 }> = ({ entry, onClose, onAdd, onDelete, onRefresh }) => {
   const key = entry.link?.[0]?.___href ?? entry.id?.split(',')[0] ?? ''
-  const isSystem = key.startsWith('/_')
+  const isSystem = location.pathname !== "/admin.html" && key.startsWith('/_')
   return (
     <Box
       sx={{
@@ -106,7 +106,7 @@ export const EntryDetailPanel: React.FC<{
   const [aclEditOpen, setAclEditOpen] = React.useState(false)
   const [aliasEditOpen, setAliasEditOpen] = React.useState(false)
   const key = entry.link?.[0]?.___href ?? entry.id?.split(',')[0] ?? ''
-  const isSystem = key.startsWith('/_')
+  const isSystem = location.pathname !== "/admin.html" && key.startsWith('/_')
 
   const EditLink: React.FC<{ onClick: () => void; testId?: string }> = ({ onClick, testId }) => (
     <Link
