@@ -232,6 +232,14 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
   const [processing, setProcessing] = React.useState<boolean>(false)
   const [downgradeCancelAt, setDowngradeCancelAt] = React.useState<string>('')
 
+  // モーダルが開くたびに表示内容をリセット
+  React.useEffect(() => {
+    if (open) {
+      setStep('view')
+      setApiError('')
+    }
+  }, [open])
+
   const isCurrentPro = currentEnv === 'pro'
   const isCancelPending = currentEnv === 'cancel-pending'
 

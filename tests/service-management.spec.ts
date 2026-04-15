@@ -405,6 +405,22 @@ test.describe('サービス管理 - プラン変更（Free→Pro） - E2E', () =
     // 成功メッセージが表示されることを確認
     await expect(page.locator('text=pro環境に変更しました。')).toBeVisible()
   })
+
+  // No.25c
+  test('Pro変更後に別サービスのプラン変更モーダルを開くと最初の画面が表示される', async ({
+    page
+  }) => {
+    await mockUpgradeToProImmediate(page)
+    // free-service を Pro に変更
+    await page.click('button:has-text("pro環境に変更する")')
+    await page.click('button:has-text("クレジットカード入力画面へ")')
+    await expect(page.locator('text=pro環境に変更しました。')).toBeVisible()
+    // 別サービス（free-service）のプラン変更モーダルを再度開く
+    await page.click('[data-testid="public-settings-free-service"]')
+    // クレジットカード確認画面ではなく、最初のプラン比較画面が表示される
+    await expect(page.locator('button:has-text("pro環境に変更する")')).toBeVisible()
+    await expect(page.locator('button:has-text("クレジットカード入力画面へ")')).not.toBeVisible()
+  })
 })
 
 // ─── E2E テスト：プラン変更（Pro→Free） ──────────────────────
