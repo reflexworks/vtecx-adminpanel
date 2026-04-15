@@ -1,0 +1,8 @@
+<feed>
+    <entry>
+        <link rel="self" href="/stripe" />
+    </entry>
+    <entry>
+        <link rel="self" href="/stripe/subscription" />
+    </entry>
+</feed>

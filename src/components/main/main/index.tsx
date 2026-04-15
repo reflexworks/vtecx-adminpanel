@@ -83,7 +83,7 @@ const Main = () => {
           <ListItemButton
             href="/#/billing"
             selected={!!matchPath('/billing', pathname)}
-            disabled={true}
+            //disabled={true}
           >
             <ListItemIcon>
               <AttachMoney />
@@ -164,6 +164,14 @@ const Main = () => {
               <Typography variant="body2">{account?.title}</Typography>
             </MenuItem>
             <Divider sx={{ display: { md: 'none' } }} />
+            <MenuItem
+              onClick={() => {
+                location.href = 'change_password.html'
+              }}
+              data-testid="change-password-button"
+            >
+              <Typography variant="body2">パスワード変更</Typography>
+            </MenuItem>
             <MenuItem onClick={logout} data-testid="logout-button">
               <Typography variant="body2">ログアウト</Typography>
             </MenuItem>
