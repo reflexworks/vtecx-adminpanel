@@ -445,7 +445,7 @@ export const DataBrowser: React.FC = () => {
                 onClick={() => setAddModalOpen(true)}
                 data-testid="add-entry-button"
               >
-                データを追加
+                下階層フォルダの追加
               </Button>
             </Box>
           )}

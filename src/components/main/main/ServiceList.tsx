@@ -26,7 +26,10 @@ import {
   MenuItem,
   Card,
   CardContent,
-  CircularProgress
+  CircularProgress,
+  Checkbox,
+  FormControlLabel,
+  Link
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import PublicIcon from '@mui/icons-material/Public'
@@ -232,11 +235,14 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
   const [processing, setProcessing] = React.useState<boolean>(false)
   const [downgradeCancelAt, setDowngradeCancelAt] = React.useState<string>('')
 
+  const [agreedToTerms, setAgreedToTerms] = React.useState<boolean>(false)
+
   // モーダルが開くたびに表示内容をリセット
   React.useEffect(() => {
     if (open) {
       setStep('view')
       setApiError('')
+      setAgreedToTerms(false)
     }
   }, [open])
 
@@ -504,6 +510,31 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
+      <FormControlLabel
+        sx={{ mb: 2, alignItems: 'flex-start' }}
+        control={
+          <Checkbox
+            checked={agreedToTerms}
+            onChange={e => setAgreedToTerms(e.target.checked)}
+            size="small"
+            sx={{ pt: 0.3 }}
+            inputProps={{ 'aria-label': '利用規約に同意する' }}
+          />
+        }
+        label={
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
+            <Link
+              href="https://vte.cx/specified_commercial_transactions.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="always"
+            >
+              特定商取引法に基づく表記
+            </Link>
+            を確認し、利用規約に同意します。
+          </Typography>
+        }
+      />
       {apiError && (
         <Alert severity="error" sx={{ mb: 2, fontSize: 12 }}>
           {apiError}
@@ -514,6 +545,7 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
           variant="outlined"
           onClick={() => {
             setApiError('')
+            setAgreedToTerms(false)
             setStep('view')
           }}
           disabled={processing}
@@ -524,7 +556,7 @@ const PublicSettingsModal: React.FC<PublicSettingsModalProps> = ({
         <Button
           variant="contained"
           onClick={handleConfirmUpgrade}
-          disabled={processing}
+          disabled={processing || !agreedToTerms}
           sx={{ flex: 2 }}
           startIcon={
             processing ? (
