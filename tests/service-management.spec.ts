@@ -378,6 +378,28 @@ test.describe('サービス管理 - プラン変更（Free→Pro） - E2E', () =
     await expect(page.locator('.MuiDialog-root')).toContainText('クレジットカード入力画面')
   })
 
+  // No.23a
+  test('確認画面に利用規約チェックボックスとリンクが表示される', async ({ page }) => {
+    await page.click('button:has-text("pro環境に変更する")')
+    await expect(page.locator('.MuiDialog-root')).toContainText('特定商取引法に基づく表記')
+    await expect(
+      page.locator('a[href="https://vte.cx/specified_commercial_transactions.html"]')
+    ).toBeVisible()
+  })
+
+  // No.23b
+  test('利用規約に同意しないと「クレジットカード入力画面へ」ボタンが非活性', async ({ page }) => {
+    await page.click('button:has-text("pro環境に変更する")')
+    await expect(page.locator('button:has-text("クレジットカード入力画面へ")')).toBeDisabled()
+  })
+
+  // No.23c
+  test('利用規約に同意すると「クレジットカード入力画面へ」ボタンが活性になる', async ({ page }) => {
+    await page.click('button:has-text("pro環境に変更する")')
+    await page.locator('[aria-label="利用規約に同意する"]').check()
+    await expect(page.locator('button:has-text("クレジットカード入力画面へ")')).toBeEnabled()
+  })
+
   // No.24
   test('確認画面で「← 戻る」を押すと元の画面に戻る', async ({ page }) => {
     await page.click('button:has-text("pro環境に変更する")')
@@ -385,10 +407,23 @@ test.describe('サービス管理 - プラン変更（Free→Pro） - E2E', () =
     await expect(page.locator('button:has-text("pro環境に変更する")')).toBeVisible()
   })
 
+  // No.24a
+  test('「← 戻る」後に再度確認画面を開くと利用規約チェックがリセットされている', async ({
+    page
+  }) => {
+    await page.click('button:has-text("pro環境に変更する")')
+    await page.locator('[aria-label="利用規約に同意する"]').check()
+    await page.click('button:has-text("← 戻る")')
+    await page.click('button:has-text("pro環境に変更する")')
+    // チェックが外れていてボタンが非活性になっていること
+    await expect(page.locator('button:has-text("クレジットカード入力画面へ")')).toBeDisabled()
+  })
+
   // No.25
   test('カード登録済みで即時Pro変更の場合モーダルが閉じてメッセージ表示', async ({ page }) => {
     await mockUpgradeToProImmediate(page)
     await page.click('button:has-text("pro環境に変更する")')
+    await page.locator('[aria-label="利用規約に同意する"]').check()
     await page.click('button:has-text("クレジットカード入力画面へ")')
     await expect(page.locator('text=pro環境に変更しました。')).toBeVisible()
   })
@@ -399,6 +434,7 @@ test.describe('サービス管理 - プラン変更（Free→Pro） - E2E', () =
   }) => {
     await mockUpgradeToPro202WithMessage(page)
     await page.click('button:has-text("pro環境に変更する")')
+    await page.locator('[aria-label="利用規約に同意する"]').check()
     await page.click('button:has-text("クレジットカード入力画面へ")')
     // ログイン画面に遷移していないことを確認
     await expect(page).not.toHaveURL(/login\.html/)
@@ -413,6 +449,7 @@ test.describe('サービス管理 - プラン変更（Free→Pro） - E2E', () =
     await mockUpgradeToProImmediate(page)
     // free-service を Pro に変更
     await page.click('button:has-text("pro環境に変更する")')
+    await page.locator('[aria-label="利用規約に同意する"]').check()
     await page.click('button:has-text("クレジットカード入力画面へ")')
     await expect(page.locator('text=pro環境に変更しました。')).toBeVisible()
     // 別サービス（free-service）のプラン変更モーダルを再度開く
